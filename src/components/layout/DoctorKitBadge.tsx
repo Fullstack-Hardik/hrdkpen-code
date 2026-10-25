@@ -7,9 +7,10 @@ interface DoctorKitBadgeProps {
   logs: RepairLog[];
   lastScan: Date;
   onScan: () => void;
+  subtle?: boolean;
 }
 
-export const DoctorKitBadge = ({ status, logs, lastScan, onScan }: DoctorKitBadgeProps) => {
+export const DoctorKitBadge = ({ status, logs, lastScan, onScan, subtle = false }: DoctorKitBadgeProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   // If there are repair logs, show a warning badge, otherwise subtle green
@@ -31,7 +32,10 @@ export const DoctorKitBadge = ({ status, logs, lastScan, onScan }: DoctorKitBadg
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-4 right-4 z-50 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-105 ${badgeColor}`}
+        className={subtle 
+          ? `flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-medium border transition-colors hover:bg-editor-active-tab ${badgeColor}`
+          : `fixed bottom-8 right-6 z-40 flex items-center gap-1.5 px-2.5 py-1 rounded-full border shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-105 opacity-80 hover:opacity-100 ${badgeColor}`
+        }
         title="Doctor Kit (System Health)"
       >
         <Icon className={`w-3.5 h-3.5 ${status === 'scanning' ? 'animate-pulse' : ''}`} />
@@ -39,14 +43,14 @@ export const DoctorKitBadge = ({ status, logs, lastScan, onScan }: DoctorKitBadg
           {status === 'scanning' ? 'Scanning' : 'Doctor Kit'}
         </span>
         {logs.length > 0 && !isOpen && (
-           <span className="ml-1 px-1.5 py-0.5 rounded-full bg-editor-panel text-[9px]">
+           <span className="ml-1 px-1.5 py-0.2 rounded-full bg-editor-panel text-[9px]">
              {logs.length}
            </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="fixed bottom-14 right-4 z-50 w-80 max-h-[400px] flex flex-col bg-editor-panel border border-editor-border rounded-xl shadow-2xl overflow-hidden animate-fade-in">
+        <div className={`fixed z-50 w-80 max-h-[400px] flex flex-col bg-editor-panel border border-editor-border rounded-xl shadow-2xl overflow-hidden animate-fade-in ${subtle ? 'bottom-8 right-3' : 'bottom-16 right-6'}`}>
           <div className="flex items-center justify-between p-3 border-b border-editor-border bg-editor-sidebar">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />

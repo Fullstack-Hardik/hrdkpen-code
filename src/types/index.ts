@@ -39,7 +39,11 @@ export type AppTheme =
   | 'midnight'
   | 'dracula'
   | 'nord'
-  | 'oceanic';
+  | 'oceanic'
+  | 'synthwave-84'
+  | 'tokyo-night'
+  | 'cyber-neon'
+  | 'solarized-dark';
 
 export interface EditorSettings {
   // Appearance

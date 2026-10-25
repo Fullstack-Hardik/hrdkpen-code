@@ -18,16 +18,20 @@ interface SettingsPanelProps {
 }
 
 const THEMES: { value: EditorSettings['theme']; label: string }[] = [
-  { value: 'smart-dark',  label: 'Catppuccin Dark' },
-  { value: 'dracula',     label: 'Dracula' },
-  { value: 'nord',        label: 'Nord' },
-  { value: 'oceanic',     label: 'Oceanic' },
-  { value: 'github-dark', label: 'GitHub Dark' },
-  { value: 'monokai',     label: 'Monokai' },
-  { value: 'pure-black',  label: 'Pure Black (AMOLED)' },
-  { value: 'graphite',    label: 'Graphite (Warm Gray)' },
-  { value: 'midnight',    label: 'Midnight (Deep Blue)' },
-  { value: 'vs-light',    label: 'Visual Studio Light' },
+  { value: 'smart-dark',    label: 'Catppuccin Dark' },
+  { value: 'synthwave-84',  label: 'Synthwave \'84 (Neon Glow)' },
+  { value: 'tokyo-night',   label: 'Tokyo Night' },
+  { value: 'cyber-neon',    label: 'Cyber Neon (High Contrast)' },
+  { value: 'solarized-dark',label: 'Solarized Dark' },
+  { value: 'dracula',       label: 'Dracula' },
+  { value: 'nord',          label: 'Nord Frost' },
+  { value: 'oceanic',       label: 'Oceanic Next' },
+  { value: 'github-dark',   label: 'GitHub Dark' },
+  { value: 'monokai',       label: 'Monokai' },
+  { value: 'pure-black',    label: 'Pure Black (AMOLED)' },
+  { value: 'graphite',      label: 'Graphite (Warm Gray)' },
+  { value: 'midnight',      label: 'Midnight (Deep Blue)' },
+  { value: 'vs-light',      label: 'Visual Studio Light' },
 ];
 
 const FONTS = [
@@ -56,56 +60,67 @@ export const SettingsPanel = ({ settings, onUpdate, onReset, onClose, initialCat
   const doctorKit = useDoctorKit();
 
   const renderCategoryNav = () => (
-    <div className="flex flex-col gap-1 w-32 border-r border-editor-border pr-3">
+    <div className="flex flex-col gap-1.5 w-full">
       {[
-        { id: 'appearance', icon: Palette, label: 'Appearance' },
-        { id: 'editor', icon: Code, label: 'Editor' },
-        { id: 'terminal', icon: Terminal, label: 'Terminal' },
-        { id: 'preview', icon: Monitor, label: 'Preview' },
-        { id: 'extensions', icon: Blocks, label: 'Extensions' },
-        { id: 'diagnostics', icon: Activity, label: 'Diagnostics' },
+        { id: 'appearance', icon: Palette, label: 'Appearance', desc: 'Theme, fonts, typography' },
+        { id: 'editor', icon: Code, label: 'Editor', desc: 'Word wrap, line numbers' },
+        { id: 'terminal', icon: Terminal, label: 'Terminal', desc: 'Font size, cursor blinking' },
+        { id: 'preview', icon: Monitor, label: 'Preview', desc: 'Auto reload, sync scroll' },
+        { id: 'extensions', icon: Blocks, label: 'Extensions', desc: 'Tools, linters, snippets' },
+        { id: 'diagnostics', icon: Activity, label: 'Diagnostics', desc: 'DoctorKit self-healing' },
       ].map(cat => (
         <button
           key={cat.id}
           onClick={() => setActiveCategory(cat.id as Category)}
-          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-left ${
             activeCategory === cat.id 
-              ? 'bg-blue-500/15 text-blue-400 shadow-sm' 
-              : 'text-editor-text-muted hover:text-editor-text hover:bg-editor-active-tab/50'
+              ? 'bg-blue-500/15 text-blue-400 shadow-sm border border-blue-500/30' 
+              : 'text-editor-text-muted hover:text-editor-text hover:bg-[hsl(var(--surface0)/0.6)] border border-transparent'
           }`}
         >
-          <cat.icon className="w-4 h-4" />
-          {cat.label}
+          <cat.icon className="w-4 h-4 flex-shrink-0" />
+          <div className="flex flex-col min-w-0">
+            <span className="font-semibold">{cat.label}</span>
+          </div>
         </button>
       ))}
     </div>
   );
 
   return (
-    <div className="flex flex-col h-full bg-[hsl(var(--crust))]">
+    <div className="flex flex-col h-full bg-[hsl(var(--crust))] select-none">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-editor-border bg-[hsl(var(--crust))] flex-shrink-0 z-10 shadow-sm relative">
-        <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded-md bg-editor-accent/20 flex items-center justify-center border border-editor-accent/30">
-            <Settings2 className="w-3.5 h-3.5 text-editor-accent" />
+      <div className="flex items-center justify-between px-6 py-4 border-b border-editor-border bg-[hsl(var(--mantle))] flex-shrink-0 z-10 shadow-sm relative">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-blue-500/15 flex items-center justify-center border border-blue-500/30 text-blue-400">
+            <Settings2 className="w-4 h-4" />
           </div>
-          <span className="text-[13px] font-semibold text-editor-text tracking-wide">System Settings</span>
+          <div>
+            <h2 className="text-sm font-bold text-editor-text tracking-wide flex items-center gap-2">
+              HRDK Pen Settings
+              <span className="text-[10px] font-normal px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                Auto-saved
+              </span>
+            </h2>
+            <p className="text-[11px] text-editor-text-muted">Customize your editor, themes, runtime, and diagnostic tools</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost" size="sm"
             onClick={onReset}
-            className="h-7 px-2.5 text-xs font-medium text-editor-text-muted hover:text-editor-text hover:bg-editor-panel/50 rounded-md transition-colors"
+            className="h-8 px-3 text-xs font-medium text-editor-text-muted hover:text-editor-text hover:bg-[hsl(var(--surface0))] rounded-lg transition-colors border border-editor-border/60"
             title="Reset to defaults"
           >
             <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
-            Reset
+            Reset Defaults
           </Button>
           <div className="w-[1px] h-4 bg-editor-border mx-1"></div>
           <Button
             variant="ghost" size="sm"
             onClick={onClose}
-            className="h-7 w-7 p-0 text-editor-text-muted hover:text-editor-text hover:bg-editor-panel/50 rounded-md transition-colors"
+            className="h-8 w-8 p-0 text-editor-text-muted hover:text-editor-text hover:bg-red-500/10 hover:text-red-400 rounded-lg transition-colors border border-transparent hover:border-red-500/20"
+            title="Close Settings (Esc)"
           >
             <X className="w-4 h-4" />
           </Button>
@@ -114,13 +129,13 @@ export const SettingsPanel = ({ settings, onUpdate, onReset, onClose, initialCat
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar Nav */}
-        <div className="w-40 bg-[hsl(var(--crust))] border-r border-editor-border/50 py-4 px-3 flex flex-col shadow-[inset_-1px_0_0_rgba(255,255,255,0.02)]">
+        <div className="w-48 bg-[hsl(var(--mantle))] border-r border-editor-border/60 py-4 px-3 flex flex-col shadow-[inset_-1px_0_0_rgba(255,255,255,0.02)]">
           {renderCategoryNav()}
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar bg-editor-bg">
-          <div className="max-w-2xl mx-auto py-8 px-8 pb-12 space-y-8">
+        <div className="flex-1 overflow-y-auto custom-scrollbar bg-[hsl(var(--base))]">
+          <div className="max-w-2xl mx-auto py-6 px-8 pb-12 space-y-8">
           
           {activeCategory === 'appearance' && (
             <div className="space-y-8 animate-fade-in">

@@ -326,6 +326,119 @@
     --sapphire: 207 82% 66%;
     --pink:     330 60% 65%;
   }
+
+  /* === NEW THEMES === */
+  .theme-synthwave-84 {
+    --crust:    266 45% 7%;
+    --mantle:   266 40% 11%;
+    --base:     266 35% 15%;
+    --surface0: 266 30% 21%;
+    --surface1: 266 25% 28%;
+    --surface2: 266 20% 36%;
+    --overlay0: 266 15% 55%;
+    --overlay1: 266 20% 70%;
+    --overlay2: 266 25% 85%;
+    --text:     266 50% 95%;
+    --subtext0: 266 40% 88%;
+    --subtext1: 266 30% 80%;
+
+    --blue:     190 95% 65%;
+    --lavender: 275 80% 75%;
+    --mauve:    295 90% 70%;
+    --red:      345 95% 65%;
+    --maroon:   330 90% 60%;
+    --peach:    25  95% 65%;
+    --yellow:   50  95% 65%;
+    --green:    120 85% 65%;
+    --teal:     175 90% 65%;
+    --sky:      195 95% 70%;
+    --sapphire: 215 95% 70%;
+    --pink:     315 95% 72%;
+  }
+
+  .theme-tokyo-night {
+    --crust:    235 25% 9%;
+    --mantle:   235 22% 12%;
+    --base:     235 21% 15%;
+    --surface0: 235 18% 21%;
+    --surface1: 235 16% 28%;
+    --surface2: 235 14% 36%;
+    --overlay0: 235 12% 52%;
+    --overlay1: 235 15% 68%;
+    --overlay2: 235 20% 82%;
+    --text:     235 30% 93%;
+    --subtext0: 235 25% 85%;
+    --subtext1: 235 20% 78%;
+
+    --blue:     217 92% 76%;
+    --lavender: 228 85% 80%;
+    --mauve:    265 89% 78%;
+    --red:      353 85% 69%;
+    --maroon:   340 80% 65%;
+    --peach:    30  90% 70%;
+    --yellow:   45  95% 72%;
+    --green:    140 65% 68%;
+    --teal:     170 70% 65%;
+    --sky:      190 90% 72%;
+    --sapphire: 210 90% 72%;
+    --pink:     330 85% 75%;
+  }
+
+  .theme-cyber-neon {
+    --crust:    180 30% 3%;
+    --mantle:   180 25% 6%;
+    --base:     180 20% 8%;
+    --surface0: 180 18% 14%;
+    --surface1: 180 16% 20%;
+    --surface2: 180 14% 28%;
+    --overlay0: 180 12% 50%;
+    --overlay1: 180 20% 70%;
+    --overlay2: 180 30% 85%;
+    --text:     180 40% 96%;
+    --subtext0: 180 35% 88%;
+    --subtext1: 180 25% 80%;
+
+    --blue:     185 100% 50%;
+    --lavender: 270 100% 70%;
+    --mauve:    290 100% 65%;
+    --red:      345 100% 60%;
+    --maroon:   330 100% 55%;
+    --peach:    25  100% 60%;
+    --yellow:   55  100% 50%;
+    --green:    135 100% 50%;
+    --teal:     165 100% 50%;
+    --sky:      190 100% 60%;
+    --sapphire: 205 100% 60%;
+    --pink:     310 100% 65%;
+  }
+
+  .theme-solarized-dark {
+    --crust:    192 100% 6%;
+    --mantle:   192 100% 8%;
+    --base:     192 100% 11%;
+    --surface0: 192 75%  15%;
+    --surface1: 192 50%  20%;
+    --surface2: 192 40%  26%;
+    --overlay0: 192 20%  45%;
+    --overlay1: 192 20%  60%;
+    --overlay2: 192 30%  75%;
+    --text:     192 30%  90%;
+    --subtext0: 192 25%  82%;
+    --subtext1: 192 20%  75%;
+
+    --blue:     205 82% 54%;
+    --lavender: 220 60% 65%;
+    --mauve:    245 55% 65%;
+    --red:      1 71% 52%;
+    --maroon:   350 65% 55%;
+    --peach:    18 80% 50%;
+    --yellow:   45 85% 45%;
+    --green:    68 60% 40%;
+    --teal:     175 60% 45%;
+    --sky:      190 70% 50%;
+    --sapphire: 205 82% 54%;
+    --pink:     330 65% 60%;
+  }
 }
 
 @layer base {

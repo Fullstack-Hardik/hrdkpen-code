@@ -99,6 +99,86 @@ const THEMES: Record<string, Parameters<any['editor']['defineTheme']>[1]> = {
       'editorCursor.foreground':     '#F8F8F0',
     },
   },
+  'synthwave-84': {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      { token: 'keyword', foreground: 'fed800' },
+      { token: 'string', foreground: 'ff7edb' },
+      { token: 'number', foreground: 'f97e72' },
+      { token: 'comment', foreground: '848bbd', fontStyle: 'italic' },
+      { token: 'type', foreground: 'fe4450' },
+      { token: 'function', foreground: '36f9f6' },
+      { token: 'variable', foreground: 'fede5d' },
+    ],
+    colors: {
+      'editor.background': '#262335',
+      'editor.foreground': '#ffffff',
+      'editorLineNumber.foreground': '#614d85',
+      'editor.lineHighlightBackground': '#2a2139',
+      'editorCursor.foreground': '#fede5d',
+    },
+  },
+  'tokyo-night': {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      { token: 'keyword', foreground: 'bb9af7' },
+      { token: 'string', foreground: '9ece6a' },
+      { token: 'number', foreground: 'ff9e64' },
+      { token: 'comment', foreground: '565f89', fontStyle: 'italic' },
+      { token: 'type', foreground: '2ac3de' },
+      { token: 'function', foreground: '7aa2f7' },
+      { token: 'variable', foreground: 'c0caf5' },
+    ],
+    colors: {
+      'editor.background': '#1a1b26',
+      'editor.foreground': '#c0caf5',
+      'editorLineNumber.foreground': '#3b4261',
+      'editor.lineHighlightBackground': '#1f2335',
+      'editorCursor.foreground': '#c0caf5',
+    },
+  },
+  'cyber-neon': {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      { token: 'keyword', foreground: 'ff007f' },
+      { token: 'string', foreground: '00ffcc' },
+      { token: 'number', foreground: 'ffff00' },
+      { token: 'comment', foreground: '008080', fontStyle: 'italic' },
+      { token: 'type', foreground: '00e5ff' },
+      { token: 'function', foreground: '00ff66' },
+      { token: 'variable', foreground: 'ffffff' },
+    ],
+    colors: {
+      'editor.background': '#050c14',
+      'editor.foreground': '#00ffcc',
+      'editorLineNumber.foreground': '#0e3a40',
+      'editor.lineHighlightBackground': '#0b1d28',
+      'editorCursor.foreground': '#ff007f',
+    },
+  },
+  'solarized-dark': {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      { token: 'keyword', foreground: '859900' },
+      { token: 'string', foreground: '2aa198' },
+      { token: 'number', foreground: 'd33682' },
+      { token: 'comment', foreground: '586e75', fontStyle: 'italic' },
+      { token: 'type', foreground: 'b58900' },
+      { token: 'function', foreground: '268bd2' },
+      { token: 'variable', foreground: '839496' },
+    ],
+    colors: {
+      'editor.background': '#002b36',
+      'editor.foreground': '#839496',
+      'editorLineNumber.foreground': '#073642',
+      'editor.lineHighlightBackground': '#073642',
+      'editorCursor.foreground': '#839496',
+    },
+  },
 };
 
 let themesRegistered = false;
@@ -177,6 +257,30 @@ export const CodeEditor = ({
     ['c', 'cpp'].forEach(lang => {
       monaco.languages.registerCompletionItemProvider(lang, {
         provideCompletionItems: () => ({ suggestions: cSnippets }),
+      });
+    });
+
+    // React, JS, and TS completion snippets
+    const webSnippets = [
+      { label: 'rfc', insertText: 'import React from \'react\';\n\nexport const ${1:ComponentName} = () => {\n\treturn (\n\t\t<div>\n\t\t\t${2:content}\n\t\t</div>\n\t);\n};\n', documentation: 'React Functional Component' },
+      { label: 'useState', insertText: 'const [${1:state}, set${1/(.*)/${1:/capitalize}/}] = useState(${2:initialState});', documentation: 'React useState hook' },
+      { label: 'useEffect', insertText: 'useEffect(() => {\n\t${1:// effect}\n\treturn () => {\n\t\t${2:// cleanup}\n\t};\n}, [${3:dependencies}]);', documentation: 'React useEffect hook' },
+      { label: 'useMemo', insertText: 'const ${1:memoized} = useMemo(() => {\n\treturn ${2:compute()};\n}, [${3:dependencies}]);', documentation: 'React useMemo hook' },
+      { label: 'useCallback', insertText: 'const ${1:memoizedCallback} = useCallback((${2:params}) => {\n\t${3:// body}\n}, [${4:dependencies}]);', documentation: 'React useCallback hook' },
+      { label: 'useRef', insertText: 'const ${1:ref} = useRef<${2:HTMLDivElement}>(null);', documentation: 'React useRef hook' },
+      { label: 'clg', insertText: 'console.log(\'${1:label}:\', ${1:variable});', documentation: 'Labeled console.log' },
+      { label: 'afn', insertText: 'const ${1:functionName} = async (${2:params}) => {\n\ttry {\n\t\t${3:// code}\n\t} catch (err) {\n\t\tconsole.error(err);\n\t}\n};', documentation: 'Async arrow function with try/catch' },
+      { label: 'fetchPost', insertText: 'const res = await fetch(\'${1:/api}\', {\n\tmethod: \'POST\',\n\theaders: { \'Content-Type\': \'application/json\' },\n\tbody: JSON.stringify(${2:data}),\n});\nconst result = await res.json();', documentation: 'Fetch POST JSON request' },
+      { label: 'prom', insertText: 'return new Promise((resolve, reject) => {\n\t${1:// async work}\n});', documentation: 'New Promise pattern' },
+    ].map(s => ({
+      ...s,
+      kind: monaco.languages.CompletionItemKind.Snippet,
+      insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+    }));
+
+    ['javascript', 'typescript'].forEach(lang => {
+      monaco.languages.registerCompletionItemProvider(lang, {
+        provideCompletionItems: () => ({ suggestions: webSnippets }),
       });
     });
 

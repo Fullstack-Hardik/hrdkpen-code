@@ -555,8 +555,15 @@ http.createServer((req, res) => {
   };
 
   const handleSmartAction = (action: 'explain' | 'fix' | 'optimize') => {
-      const message = `Please ${action} this code:\n\`\`\`\n${selection.text}\n\`\`\``;
-      window.open(`https://chatgpt.com/?q=${encodeURIComponent(message)}`, '_blank');
+    if (!selection.text) return;
+    setRightPanel('ai');
+    setTimeout(() => {
+      let prompt = '';
+      if (action === 'explain') prompt = `Please explain this code in detail:\n\`\`\`\n${selection.text}\n\`\`\``;
+      else if (action === 'fix') prompt = `Please find and fix any bugs or issues in this code:\n\`\`\`\n${selection.text}\n\`\`\``;
+      else if (action === 'optimize') prompt = `Please optimize this code for maximum efficiency and readability:\n\`\`\`\n${selection.text}\n\`\`\``;
+      aiAssistantRef.current?.submitPrompt(prompt);
+    }, 150);
   };
 
   useEffect(() => {
@@ -693,17 +700,6 @@ http.createServer((req, res) => {
 
   // ─── Sidebar content ───
   const renderSidebarContent = () => {
-    if (activityView === 'settings') {
-      return (
-        <SettingsPanel
-          settings={settings}
-          onUpdate={updateSetting}
-          onReset={resetSettings}
-          onClose={() => setShowSettings(false)}
-          initialCategory={settingsCategory}
-        />
-      );
-    }
     if (activityView === 'projects') {
       return (
         <ProjectsPanel
@@ -977,6 +973,7 @@ http.createServer((req, res) => {
                 setActivityView(view);
               }
             }}
+            onOpenSettings={() => setShowSettings(true)}
             terminalOpen={bottomPanelOpen}
             onToggleTerminal={() => setBottomPanelOpen(v => !v)}
             errorCount={errorCount}
@@ -986,12 +983,13 @@ http.createServer((req, res) => {
         {/* Main layout */}
         <div className="flex flex-col flex-1 overflow-hidden min-h-0 relative">
           
-          <div className="absolute right-4 bottom-4 z-50 pointer-events-auto">
+          <div className="absolute right-4 bottom-2 z-40 pointer-events-auto">
              <DoctorKitBadge 
                status={doctorKit.status} 
                logs={doctorKit.logs} 
                lastScan={doctorKit.lastScan} 
                onScan={doctorKit.scan} 
+               subtle={true}
              />
           </div>
           
@@ -1117,16 +1115,8 @@ http.createServer((req, res) => {
                           fileName={activeFile.name}
                           settings={settings}
                           onRun={runActiveFile}
-                          onCursorChange={(line, col, pos) => {
+                          onCursorChange={(line, col) => {
                             setCursorPos({ line, col });
-                            if (pos) {
-                              cursorPixelRef.current = pos;
-                              setBrainWidget(prev => ({ ...prev, visible: false }));
-                              if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-                              idleTimerRef.current = setTimeout(() => {
-                                setBrainWidget({ visible: true, top: pos.top, left: pos.left, loading: false });
-                              }, 5000);
-                            }
                           }}
                           onSelectionChange={(text, pos) => setSelection({ text, pos })}
                           onErrors={handleEditorErrors}
@@ -1148,20 +1138,6 @@ http.createServer((req, res) => {
                         text={selection.text}
                         onAction={handleSmartAction}
                       />
-                      {brainWidget.visible && (
-                        <div 
-                          className="absolute z-50 flex items-center justify-center p-1.5 rounded shadow-lg bg-[hsl(var(--yellow)/0.2)] border border-[hsl(var(--yellow)/0.5)] cursor-pointer hover:bg-[hsl(var(--yellow)/0.4)] transition-all animate-fade-in"
-                          style={{ top: brainWidget.top - 28, left: brainWidget.left + 12 }}
-                          onClick={handleBrainClick}
-                          title="Auto-complete code"
-                        >
-                          {brainWidget.loading ? (
-                            <Loader2 className="w-4 h-4 text-[hsl(var(--yellow))] animate-spin" />
-                          ) : (
-                            <Brain className="w-4 h-4 text-[hsl(var(--yellow))] animate-pulse" />
-                          )}
-                        </div>
-                      )}
                     </>
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center gap-4 text-center select-none">
@@ -1379,35 +1355,44 @@ http.createServer((req, res) => {
             {/* Panel content */}
             <div className="flex-1 overflow-hidden flex flex-col min-h-0">
               <div style={{ display: bottomTab === 'terminal' ? 'flex' : 'none' }} className="flex-col w-full h-full">
-                  <div className="flex items-center gap-1 bg-editor-panel border-b border-editor-border px-2 pt-1 overflow-x-auto min-h-[28px]">
-                    {terminals.map(term => (
-                      <div
-                        key={term.id}
-                        onClick={() => setActiveTerminalId(term.id)}
-                        className={`flex items-center gap-2 px-3 py-1 text-xs cursor-pointer rounded-t-md transition-colors ${
-                          activeTerminalId === term.id
-                            ? 'bg-[#1e1e2e] text-editor-text border border-editor-border border-b-0'
-                            : 'text-editor-text-muted hover:bg-editor-active-tab'
-                        }`}
+                  <div className="flex items-center justify-between bg-[hsl(var(--crust))] border-b border-editor-border/60 px-3 py-1.5 overflow-x-auto min-h-[34px]">
+                    <div className="flex items-center gap-1.5 overflow-x-auto">
+                      {terminals.map(term => (
+                        <div
+                          key={term.id}
+                          onClick={() => setActiveTerminalId(term.id)}
+                          className={`group flex items-center gap-2 px-3 py-1 text-xs cursor-pointer rounded-lg transition-all font-mono ${
+                            activeTerminalId === term.id
+                              ? 'bg-[hsl(var(--surface0))] text-[hsl(var(--text))] font-medium shadow-sm border border-editor-border/80'
+                              : 'text-editor-text-muted hover:text-editor-text hover:bg-[hsl(var(--surface0)/0.4)] border border-transparent'
+                          }`}
+                        >
+                          <TerminalIcon className={`w-3.5 h-3.5 ${activeTerminalId === term.id ? 'text-blue-400' : 'text-editor-text-dim'}`} />
+                          <span className="truncate max-w-[130px]">{term.name}</span>
+                          {terminals.length > 1 && (
+                            <button
+                              onClick={(e) => handleRemoveTerminal(term.id, e)}
+                              className="p-0.5 opacity-0 group-hover:opacity-100 hover:bg-red-500/20 rounded text-editor-text-muted hover:text-red-400 transition-all"
+                            >
+                              <X className="w-2.5 h-2.5" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                      <button
+                        onClick={handleAddTerminal}
+                        className="p-1.5 rounded-lg text-editor-text-muted hover:text-editor-text hover:bg-[hsl(var(--surface0))] transition-colors border border-dashed border-editor-border/60 ml-0.5"
+                        title="New Terminal Tab"
                       >
-                        <span>{term.name}</span>
-                        {terminals.length > 1 && (
-                          <button
-                            onClick={(e) => handleRemoveTerminal(term.id, e)}
-                            className="p-0.5 hover:bg-editor-border rounded text-editor-text-muted hover:text-editor-error"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      onClick={handleAddTerminal}
-                      className="p-1 text-editor-text-muted hover:text-editor-text ml-1"
-                      title="New Terminal"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
+                        <Plus className="w-3 h-3" />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] text-editor-text-dim font-mono">
+                      <span className="flex items-center gap-1 text-emerald-400">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        WebContainer Node.js 18
+                      </span>
+                    </div>
                   </div>
                   <div className="flex-1 relative bg-[#1e1e2e]">
                     {terminals.map(term => (
@@ -1529,6 +1514,26 @@ http.createServer((req, res) => {
           warnings={warningCount}
           onShowProblems={() => { setBottomPanelOpen(true); setBottomTab('problems'); }}
         />
+      )}
+
+      {/* Floating Card Modal for Settings */}
+      {showSettings && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/60 backdrop-blur-md animate-fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowSettings(false);
+          }}
+        >
+          <div className="relative w-full max-w-4xl h-[85vh] max-h-[750px] rounded-2xl overflow-hidden border border-editor-border bg-[hsl(var(--mantle))] shadow-2xl animate-scale-in flex flex-col">
+            <SettingsPanel
+              settings={settings}
+              onUpdate={updateSetting}
+              onReset={resetSettings}
+              onClose={() => setShowSettings(false)}
+              initialCategory={settingsCategory}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

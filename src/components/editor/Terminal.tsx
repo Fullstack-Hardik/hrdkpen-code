@@ -1,7 +1,7 @@
 import { useEffect, useRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { Terminal as XTerm } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
-import { TerminalSquare, Trash2, X } from 'lucide-react';
+import { TerminalSquare, Trash2, X, Terminal as TerminalIcon, Sparkles, CheckCircle2, ShieldCheck, Cpu } from 'lucide-react';
 import { Play, HelpCircle, Code2, Bug } from 'lucide-react';
 import { getWebContainer } from '@/lib/webcontainer';
 import { executeJavaScript, executePython, executeCompiled } from '@/lib/execution';
@@ -18,6 +18,7 @@ export interface TerminalHandle {
 interface TerminalProps {
   onClose?: () => void;
   managedProcessId?: string;
+  theme?: string;
 }
 
 export const Terminal = forwardRef<TerminalHandle, TerminalProps>(({ onClose, managedProcessId }, ref) => {
@@ -205,16 +206,20 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(({ onClose, ma
   }));
 
   return (
-    <div className="flex flex-col h-full font-code bg-editor-bg">
+    <div className="flex flex-col h-full font-code bg-[#0d0e15] border-t border-editor-border/40 select-text">
       {/* Terminal Output */}
       <div className="flex-1 overflow-hidden relative">
         {isBooting && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-editor-bg/80 backdrop-blur-sm animate-fade-in">
-             <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-3" />
-             <span className="text-xs font-medium text-blue-400 animate-pulse">Booting container...</span>
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#0d0e15]/90 backdrop-blur-md animate-fade-in">
+             <div className="relative mb-3">
+               <div className="w-9 h-9 border-2 border-blue-500/20 border-t-blue-400 rounded-full animate-spin" />
+               <TerminalIcon className="w-4 h-4 text-blue-400 absolute inset-0 m-auto animate-pulse" />
+             </div>
+             <span className="text-xs font-medium text-blue-400 tracking-wide">Initializing Posix Shell Environment...</span>
+             <span className="text-[10px] text-editor-text-muted mt-1">Mounting WebContainer VFS</span>
           </div>
         )}
-        <div className="absolute inset-0 p-2" ref={terminalRef} />
+        <div className="absolute inset-0 p-3 pt-2" ref={terminalRef} />
       </div>
     </div>
   );

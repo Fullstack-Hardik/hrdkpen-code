@@ -26,6 +26,7 @@ export type ActivityBarView =
 interface ActivityBarProps {
   active: ActivityBarView;
   onChange: (view: ActivityBarView) => void;
+  onOpenSettings?: () => void;
   terminalOpen: boolean;
   onToggleTerminal: () => void;
   errorCount: number;
@@ -41,6 +42,7 @@ interface BarItem {
 export const ActivityBar = ({
   active,
   onChange,
+  onOpenSettings,
   terminalOpen,
   onToggleTerminal,
   errorCount,
@@ -52,10 +54,6 @@ export const ActivityBar = ({
     { id: 'docs',       icon: <BookOpen className="w-5 h-5" />,        label: 'Docs & Help', position: 'top' },
     { id: 'excalidraw', icon: <PenTool className="w-5 h-5" />,         label: 'Whiteboard',  position: 'top' },
     { id: 'mdn',        icon: <GraduationCap className="w-5 h-5" />,   label: 'DevDocs',     position: 'top' },
-  ];
-
-  const bottomItems: BarItem[] = [
-    { id: 'settings', icon: <Settings2 className="w-5 h-5" />, label: 'Settings', position: 'bottom' },
   ];
 
   const renderItem = (item: BarItem) => {
@@ -143,7 +141,32 @@ export const ActivityBar = ({
           </span>
         </button>
 
-        {bottomItems.map(renderItem)}
+        {/* Settings button - opens separate modal card */}
+        <button
+          title="Settings"
+          onClick={() => {
+            if (onOpenSettings) {
+              onOpenSettings();
+            } else {
+              onChange('settings');
+            }
+          }}
+          className="activity-bar-icon group relative hover:text-[hsl(var(--text))]"
+          aria-label="Settings"
+        >
+          <Settings2 className="w-5 h-5 relative z-10 group-hover:rotate-45 transition-transform duration-300" />
+          <span
+            className="absolute left-full ml-3 px-2.5 py-1 text-xs rounded-md whitespace-nowrap pointer-events-none z-50
+                       opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-editor-md"
+            style={{
+              background: 'hsl(var(--crust))',
+              color: 'hsl(var(--text))',
+              border: '1px solid hsl(var(--surface1))',
+            }}
+          >
+            Settings
+          </span>
+        </button>
       </div>
     </div>
   );
