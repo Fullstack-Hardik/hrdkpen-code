@@ -5,6 +5,7 @@ import { TerminalSquare, Trash2, X, Terminal as TerminalIcon, Sparkles, CheckCir
 import { Play, HelpCircle, Code2, Bug } from 'lucide-react';
 import { getWebContainer } from '@/lib/webcontainer';
 import { executeJavaScript, executePython, executeCompiled } from '@/lib/execution';
+import { executeCode } from '@/lib/unifiedExecutor';
 import '@xterm/xterm/css/xterm.css';
 
 import { processManager } from '@/lib/processManager';
@@ -150,22 +151,26 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(({ onClose, ma
       const lang = language.toLowerCase();
       
       if (lang === 'python' || lang === 'py') {
-        term.writeln('\x1b[36m▶ Loading Python (Pyodide)...\x1b[0m');
+        term.writeln('\x1b[36m▶ Loading Python (Pyodide WASM)...\x1b[0m');
         const r = await executePython(code);
-        if (r.stdout) term.writeln(r.stdout.replace(/\\n/g, '\r\n'));
-        if (r.stderr) term.writeln(`\x1b[31m${r.stderr}\x1b[0m`.replace(/\\n/g, '\r\n'));
+        if (r.stdout) term.writeln(r.stdout.replace(/\n/g, '\r\n'));
+        if (r.stderr) term.writeln(`\x1b[31m${r.stderr}\x1b[0m`.replace(/\n/g, '\r\n'));
         if (!r.stdout && !r.stderr) term.writeln('\x1b[32m(no output)\x1b[0m');
         term.writeln('');
-      } else if (lang === 'c' || lang === 'cpp') {
-        term.writeln('\x1b[36m▶ Compiling with GCC...\x1b[0m');
+      } else if (['c', 'cpp', 'java', 'rust', 'go', 'csharp', 'sql'].includes(lang)) {
+        term.writeln(`\x1b[36m▶ Running ${lang.toUpperCase()} via unified execution runtime...\x1b[0m`);
         try {
-          const r = await executeCompiled(lang as 'c' | 'cpp', code);
-          if (r.stdout) term.writeln(r.stdout.replace(/\\n/g, '\r\n'));
-          if (r.stderr) term.writeln(`\x1b[31m${r.stderr}\x1b[0m`.replace(/\\n/g, '\r\n'));
+          const r = await executeCode({ languageId: lang, code });
+          if (r.compilerOutput) term.writeln(`\x1b[33m[Compiler]\r\n${r.compilerOutput}\x1b[0m`.replace(/\n/g, '\r\n'));
+          if (r.stdout) term.writeln(r.stdout.replace(/\n/g, '\r\n'));
+          if (r.stderr) term.writeln(`\x1b[31m${r.stderr}\x1b[0m`.replace(/\n/g, '\r\n'));
           if (r.exitCode !== 0) term.writeln(`\x1b[31mProcess exited with code ${r.exitCode}\x1b[0m`);
-          else if (!r.stdout && !r.stderr) term.writeln('\x1b[32m(no output)\x1b[0m');
-        } catch {
-          term.writeln('\x1b[31mServer unavailable.\x1b[0m');
+          else if (!r.stdout && !r.stderr && !r.compilerOutput) term.writeln('\x1b[32m(no output)\x1b[0m');
+          if (r.executionDurationMs !== undefined) {
+            term.writeln(`\x1b[90mFinished in ${r.executionDurationMs}ms via ${r.runtimeName}\x1b[0m`);
+          }
+        } catch (err: any) {
+          term.writeln(`\x1b[31mRuntime execution failed: ${err.message || String(err)}\x1b[0m`);
         }
         term.writeln('');
       } else {

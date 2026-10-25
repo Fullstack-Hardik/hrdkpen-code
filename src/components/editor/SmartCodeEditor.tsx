@@ -35,6 +35,8 @@ import { useDoctorKit } from '@/hooks/useDoctorKit';
 import { getLanguageFromFilename, PREVIEW_LANGUAGES, LANGUAGE_TEMPLATES } from '@/lib/languages';
 import { getFileLanguageIcon } from '@/utils/languageIcons';
 import { executeJavaScript, executePython, executeCompiled } from '@/lib/execution';
+import { executeCode } from '@/lib/unifiedExecutor';
+import { EnvironmentPanel } from '@/components/panels/EnvironmentPanel';
 import { getWebContainer, clearWebContainerFS } from '@/lib/webcontainer';
 import { downloadProject, publishProject } from '@/lib/publish';
 import { useToast } from '@/hooks/use-toast';
@@ -516,21 +518,30 @@ http.createServer((req, res) => {
           addOutput('system', '(no output)');
         }
       } else if (lang === 'python') {
-        addOutput('system', 'Loading Python environment...');
+        addOutput('system', 'Loading Python environment (Pyodide WASM)...');
         const r = await executePython(activeFile.content);
         if (r.stdout) addOutput('log', r.stdout);
         if (r.stderr) addOutput('error', r.stderr);
         if (!r.stdout && !r.stderr) addOutput('system', '(no output)');
-      } else if (lang === 'c' || lang === 'cpp') {
-        addOutput('system', 'Compiling with GCC via Piston API...');
-        try {
-          const r = await executeCompiled(lang as 'c' | 'cpp', activeFile.content);
-          if (r.stdout) addOutput('log', r.stdout);
-          if (r.stderr) addOutput('error', r.stderr);
-          if (r.exitCode !== 0) addOutput('error', `Exit code: ${r.exitCode}`);
-          else if (!r.stdout && !r.stderr) addOutput('system', '(no output)');
-        } catch {
-          addOutput('error', 'Server unavailable. Start Express server: cd server && node index.js');
+      } else {
+        // Multi-language unified execution (C, C++, Java, Rust, Go, C#, SQL)
+        addOutput('system', `Dispatching ${lang.toUpperCase()} to execution runtime...`);
+        const r = await executeCode({
+          languageId: lang,
+          code: activeFile.content,
+          filename: activeFile.name,
+        });
+
+        if (r.compilerOutput) addOutput('system', `[Compiler] ${r.compilerOutput}`);
+        if (r.stdout) addOutput('log', r.stdout);
+        if (r.stderr) addOutput('error', r.stderr);
+        if (r.exitCode !== 0) {
+          addOutput('error', `Process exited with code ${r.exitCode}`);
+        } else if (!r.stdout && !r.stderr && !r.compilerOutput) {
+          addOutput('system', '(no output)');
+        }
+        if (r.executionDurationMs !== undefined) {
+          addOutput('system', `Completed in ${r.executionDurationMs}ms via ${r.runtimeName}`);
         }
       }
     } catch (e: unknown) {
@@ -772,6 +783,19 @@ http.createServer((req, res) => {
             </div>
           )}
         </div>
+      );
+    }
+    if (activityView === 'environments') {
+      return (
+        <EnvironmentPanel
+          currentLanguageId={activeFile?.language || 'typescript'}
+          onSelectLanguage={(langId) => {
+            // Optional callback
+          }}
+          onRunTestCode={async (langId) => {
+            runActiveFile();
+          }}
+        />
       );
     }
     if (activityView === 'docs') {
@@ -1018,11 +1042,12 @@ http.createServer((req, res) => {
                         style={{ height: 36 }}
                       >
                         <p className="text-[11px] font-semibold uppercase tracking-widest text-editor-text-muted">
-                          {activityView === 'search'   ? 'Search'
-                          : activityView === 'projects' ? 'Projects'
-                          : activityView === 'docs'     ? 'Documentation'
-                          : activityView === 'assets'   ? 'Assets'
-                          : activityView === 'help'     ? 'Help Center'
+                          {activityView === 'search'         ? 'Search'
+                          : activityView === 'projects'     ? 'Projects'
+                          : activityView === 'environments' ? 'Language Runtimes'
+                          : activityView === 'docs'         ? 'Documentation'
+                          : activityView === 'assets'       ? 'Assets'
+                          : activityView === 'help'         ? 'Help Center'
                           : 'Settings'}
                         </p>
                       </div>

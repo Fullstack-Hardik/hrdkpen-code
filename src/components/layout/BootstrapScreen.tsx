@@ -86,10 +86,55 @@ const TEMPLATE_CARDS: TemplateCard[] = [
   {
     type: 'c' as keyof typeof TEMPLATES,
     label: 'C / C++',
-    description: 'Compile and run native C/C++ via Piston API.',
+    description: 'Compile and run native C/C++ via GCC & Piston.',
     icon: <Cpu className="w-7 h-7 text-purple-400" />,
     gradient: 'from-purple-500/15 via-transparent to-transparent',
     stagger: 'stagger-6',
+  },
+  {
+    type: 'java' as keyof typeof TEMPLATES,
+    label: 'Java',
+    description: 'Java 15 JVM execution environment.',
+    icon: <Coffee className="w-7 h-7 text-amber-500" />,
+    gradient: 'from-amber-500/15 via-transparent to-transparent',
+    stagger: 'stagger-1',
+  },
+  {
+    type: 'rust' as keyof typeof TEMPLATES,
+    label: 'Rust',
+    description: 'Rust 1.68 compiler and runtime sandbox.',
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-7 h-7 text-red-400" fill="currentColor">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" fill="none" />
+        <path d="M9 8h6a2 2 0 012 2v0a2 2 0 01-2 2H9zm0 0v8m3-4l3 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </svg>
+    ),
+    gradient: 'from-red-500/15 via-transparent to-transparent',
+    stagger: 'stagger-2',
+  },
+  {
+    type: 'go' as keyof typeof TEMPLATES,
+    label: 'Go',
+    description: 'Go 1.16 toolchain and rapid compilation.',
+    icon: <Zap className="w-7 h-7 text-sky-400" />,
+    gradient: 'from-sky-500/15 via-transparent to-transparent',
+    stagger: 'stagger-3',
+  },
+  {
+    type: 'csharp' as keyof typeof TEMPLATES,
+    label: 'C# / .NET',
+    description: 'Modern .NET and C# execution environment.',
+    icon: <Code2 className="w-7 h-7 text-indigo-400" />,
+    gradient: 'from-indigo-500/15 via-transparent to-transparent',
+    stagger: 'stagger-4',
+  },
+  {
+    type: 'sql' as keyof typeof TEMPLATES,
+    label: 'SQL Playground',
+    description: 'In-memory relational database & query engine.',
+    icon: <Box className="w-7 h-7 text-teal-400" />,
+    gradient: 'from-teal-500/15 via-transparent to-transparent',
+    stagger: 'stagger-5',
   },
   {
     type: 'import',

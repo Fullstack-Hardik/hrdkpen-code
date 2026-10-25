@@ -22,7 +22,12 @@ function getLang(name: string) {
   if (name.endsWith('.json')) return 'json';
   if (name.endsWith('.py')) return 'python';
   if (name.endsWith('.c')) return 'c';
-  if (name.endsWith('.cpp')) return 'cpp';
+  if (name.endsWith('.cpp') || name.endsWith('.cc') || name.endsWith('.h')) return 'cpp';
+  if (name.endsWith('.java')) return 'java';
+  if (name.endsWith('.rs')) return 'rust';
+  if (name.endsWith('.go')) return 'go';
+  if (name.endsWith('.cs')) return 'csharp';
+  if (name.endsWith('.sql')) return 'sql';
   return 'plaintext';
 }
 
@@ -215,9 +220,79 @@ int main() {
     createNode('main.cpp', 'file', `#include <iostream>
 
 int main() {
-    std::cout << "Hello from C++!" << std::endl;
+    std::cout << "Hello from C++ in HRDK Pen!" << std::endl;
     return 0;
 }
+`),
+  ],
+
+  java: (): FileNode[] => [
+    createNode('Main.java', 'file', `public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello from Java 15 on HRDK Pen!");
+        int sum = 0;
+        for (int i = 1; i <= 10; i++) sum += i;
+        System.out.println("Sum of 1..10 = " + sum);
+    }
+}
+`),
+  ],
+
+  rust: (): FileNode[] => [
+    createNode('main.rs', 'file', `fn main() {
+    println!("Hello from Rust on HRDK Pen!");
+    let numbers = vec![1, 2, 3, 4, 5];
+    let doubled: Vec<i32> = numbers.iter().map(|x| x * 2).collect();
+    println!("Doubled: {:?}", doubled);
+}
+`),
+  ],
+
+  go: (): FileNode[] => [
+    createNode('main.go', 'file', `package main
+
+import (
+    "fmt"
+    "time"
+)
+
+func main() {
+    fmt.Println("Hello from Go on HRDK Pen!")
+    fmt.Printf("Current UTC Time: %s\\n", time.Now().UTC().Format(time.RFC1123))
+}
+`),
+  ],
+
+  csharp: (): FileNode[] => [
+    createNode('Program.cs', 'file', `using System;
+
+namespace HrdkPenApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Hello from C# / .NET on HRDK Pen!");
+            Console.WriteLine($"Environment: {Environment.OSVersion}");
+        }
+    }
+}
+`),
+  ],
+
+  sql: (): FileNode[] => [
+    createNode('query.sql', 'file', `-- Interactive SQL Playground
+CREATE TABLE users (
+    id INT,
+    username VARCHAR,
+    role VARCHAR
+);
+
+INSERT INTO users VALUES (1, 'hardik', 'admin');
+INSERT INTO users VALUES (2, 'developer', 'engineer');
+INSERT INTO users VALUES (3, 'designer', 'ui/ux');
+
+SELECT * FROM users;
 `),
   ],
 

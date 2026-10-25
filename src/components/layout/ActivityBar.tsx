@@ -10,11 +10,13 @@ import {
   GraduationCap,
   Search,
   HelpCircle,
+  Server,
 } from 'lucide-react';
 
 export type ActivityBarView =
   | 'explorer'
   | 'search'
+  | 'environments'
   | 'projects'
   | 'excalidraw'
   | 'mdn'
@@ -48,12 +50,13 @@ export const ActivityBar = ({
   errorCount,
 }: ActivityBarProps) => {
   const topItems: BarItem[] = [
-    { id: 'explorer',   icon: <Files className="w-5 h-5" />,          label: 'Explorer',    position: 'top' },
-    { id: 'search',     icon: <Search className="w-5 h-5" />,          label: 'Search',      position: 'top' },
-    { id: 'projects',   icon: <FolderTree className="w-5 h-5" />,      label: 'Projects',    position: 'top' },
-    { id: 'docs',       icon: <BookOpen className="w-5 h-5" />,        label: 'Docs & Help', position: 'top' },
-    { id: 'excalidraw', icon: <PenTool className="w-5 h-5" />,         label: 'Whiteboard',  position: 'top' },
-    { id: 'mdn',        icon: <GraduationCap className="w-5 h-5" />,   label: 'DevDocs',     position: 'top' },
+    { id: 'explorer',     icon: <Files className="w-5 h-5" />,          label: 'Explorer',          position: 'top' },
+    { id: 'search',       icon: <Search className="w-5 h-5" />,        label: 'Search',            position: 'top' },
+    { id: 'environments', icon: <Server className="w-5 h-5" />,        label: 'Language Runtimes', position: 'top' },
+    { id: 'projects',     icon: <FolderTree className="w-5 h-5" />,    label: 'Projects',          position: 'top' },
+    { id: 'docs',         icon: <BookOpen className="w-5 h-5" />,      label: 'Docs & Help',       position: 'top' },
+    { id: 'excalidraw',   icon: <PenTool className="w-5 h-5" />,       label: 'Whiteboard',        position: 'top' },
+    { id: 'mdn',          icon: <GraduationCap className="w-5 h-5" />, label: 'DevDocs',           position: 'top' },
   ];
 
   const renderItem = (item: BarItem) => {
