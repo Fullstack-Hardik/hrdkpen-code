@@ -41,6 +41,7 @@ function applyTheme(theme: AppTheme) {
   root.classList.forEach(cls => {
     if (cls.startsWith('theme-')) root.classList.remove(cls);
   });
+  root.classList.remove('dark', 'light');
 
   // Enable smooth transition on body for theme switch
   document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
@@ -48,6 +49,14 @@ function applyTheme(theme: AppTheme) {
   // Add new theme class both to html (for CSS vars) and body (legacy)
   root.classList.add(`theme-${theme}`);
   document.body.className = `theme-${theme}`;
+
+  // Add dark/light class for Tailwind and Radix/shadcn compatibility
+  const isLight = theme.includes('light');
+  if (isLight) {
+    root.classList.add('light');
+  } else {
+    root.classList.add('dark');
+  }
 }
 
 export function useSettings() {

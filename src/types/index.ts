@@ -50,6 +50,8 @@ export interface EditorSettings {
   theme: AppTheme;
   fontSize: number;
   fontFamily: string;
+  uiFontFamily?: string;
+  terminalFontFamily?: string;
   tabSize: number;
   // Editor behaviour
   wordWrap: boolean;

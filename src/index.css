@@ -58,6 +58,33 @@
     --editor-warning:      var(--yellow);
     --editor-error:        var(--red);
     --editor-info:         var(--blue);
+
+    /* === shadcn / Radix Design Tokens === */
+    --background:          var(--base);
+    --foreground:          var(--text);
+    --card:                var(--crust);
+    --card-foreground:     var(--text);
+    --popover:             var(--crust);
+    --popover-foreground:  var(--text);
+    --primary:             var(--blue);
+    --primary-foreground:  240 12% 4%;
+    --secondary:           var(--surface0);
+    --secondary-foreground: var(--text);
+    --muted:               var(--surface0);
+    --muted-foreground:    var(--overlay1);
+    --accent:              var(--surface0);
+    --accent-foreground:   var(--text);
+    --destructive:         var(--red);
+    --destructive-foreground: 240 12% 4%;
+    --border:              var(--surface1);
+    --input:               var(--surface1);
+    --ring:                var(--blue);
+    --radius:              0.5rem;
+
+    /* === Global Typography Tokens === */
+    --font-ui:             'Inter', system-ui, sans-serif;
+    --font-editor:         'JetBrains Mono', 'Fira Code', monospace;
+    --font-terminal:       'JetBrains Mono', monospace;
   }
 
   /* ==========================================================================
@@ -206,6 +233,26 @@
     --editor-text: #1e1e1e;
     --editor-text-muted: #6e6e6e;
     --editor-text-dim: #999999;
+
+    --background: 0 0% 100%;
+    --foreground: 0 0% 12%;
+    --card: 0 0% 98%;
+    --card-foreground: 0 0% 12%;
+    --popover: 0 0% 98%;
+    --popover-foreground: 0 0% 12%;
+    --primary: var(--blue);
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 92%;
+    --secondary-foreground: 0 0% 12%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 0% 92%;
+    --accent-foreground: 0 0% 12%;
+    --destructive: var(--red);
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 86%;
+    --input: 0 0% 86%;
+    --ring: var(--blue);
   }
 
   /* ==========================================================================
