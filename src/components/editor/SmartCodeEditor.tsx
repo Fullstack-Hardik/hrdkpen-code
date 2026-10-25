@@ -36,7 +36,6 @@ import { getLanguageFromFilename, PREVIEW_LANGUAGES, LANGUAGE_TEMPLATES } from '
 import { getFileLanguageIcon } from '@/utils/languageIcons';
 import { executeJavaScript, executePython, executeCompiled } from '@/lib/execution';
 import { executeCode } from '@/lib/unifiedExecutor';
-import { EnvironmentPanel } from '@/components/panels/EnvironmentPanel';
 import { getWebContainer, clearWebContainerFS } from '@/lib/webcontainer';
 import { downloadProject, publishProject } from '@/lib/publish';
 import { useToast } from '@/hooks/use-toast';
@@ -785,19 +784,6 @@ http.createServer((req, res) => {
         </div>
       );
     }
-    if (activityView === 'environments') {
-      return (
-        <EnvironmentPanel
-          currentLanguageId={activeFile?.language || 'typescript'}
-          onSelectLanguage={(langId) => {
-            // Optional callback
-          }}
-          onRunTestCode={async (langId) => {
-            runActiveFile();
-          }}
-        />
-      );
-    }
     if (activityView === 'docs') {
       return <DocsViewer />;
     }
@@ -1044,7 +1030,6 @@ http.createServer((req, res) => {
                         <p className="text-[11px] font-semibold uppercase tracking-widest text-editor-text-muted">
                           {activityView === 'search'         ? 'Search'
                           : activityView === 'projects'     ? 'Projects'
-                          : activityView === 'environments' ? 'Language Runtimes'
                           : activityView === 'docs'         ? 'Documentation'
                           : activityView === 'assets'       ? 'Assets'
                           : activityView === 'help'         ? 'Help Center'

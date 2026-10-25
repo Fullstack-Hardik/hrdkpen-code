@@ -9,7 +9,6 @@ import {
   BookOpen, 
   ImageIcon, 
   Terminal, 
-  Server, 
   Code2, 
   RotateCcw, 
   FolderPlus, 
@@ -21,7 +20,6 @@ import {
   GraduationCap
 } from 'lucide-react';
 import type { FileNode } from '@/types';
-import { SUPPORTED_LANGUAGES } from '@/lib/languageRegistry';
 
 export const CommandPalette = ({
   open,
@@ -161,17 +159,6 @@ export const CommandPalette = ({
           <Command.Group heading="Views & Navigation" className="text-[11px] font-semibold text-editor-text-muted uppercase tracking-wider mb-2 px-2">
             <Command.Item
               onSelect={() => {
-                onAction('view', 'environments');
-                setOpen(false);
-              }}
-              className="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-editor-text cursor-pointer hover:bg-editor-active-tab aria-selected:bg-editor-active-tab aria-selected:text-editor-text"
-            >
-              <Server className="w-4 h-4 text-emerald-400" />
-              <span>Language Runtimes & Environments</span>
-            </Command.Item>
-
-            <Command.Item
-              onSelect={() => {
                 onAction('view', 'projects');
                 setOpen(false);
               }}
@@ -227,29 +214,6 @@ export const CommandPalette = ({
               ))}
             </Command.Group>
           )}
-
-          <Command.Separator className="h-px bg-editor-border my-1.5" />
-
-          {/* Languages quick switch / switch template */}
-          <Command.Group heading="Language Runtimes Available" className="text-[11px] font-semibold text-editor-text-muted uppercase tracking-wider mb-2 px-2">
-            {SUPPORTED_LANGUAGES.map((lang) => (
-              <Command.Item
-                key={lang.id}
-                onSelect={() => {
-                  onAction('view', 'environments');
-                  setOpen(false);
-                }}
-                className="flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs text-editor-text cursor-pointer hover:bg-editor-active-tab aria-selected:bg-editor-active-tab"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-primary/70" />
-                  <span>{lang.name}</span>
-                  <span className="text-[10px] text-editor-text-dim">({lang.runtimeName})</span>
-                </div>
-                <span className="text-[10px] font-mono text-[hsl(var(--subtext0))]">Tier {lang.tier}</span>
-              </Command.Item>
-            ))}
-          </Command.Group>
         </Command.List>
       </div>
     </Command.Dialog>
