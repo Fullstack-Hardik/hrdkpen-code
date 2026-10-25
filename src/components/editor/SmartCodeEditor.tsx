@@ -8,7 +8,7 @@ import {
   ContextMenuTrigger,
   ContextMenuSeparator,
 } from '@/components/ui/context-menu';
-import { X, Monitor, Bot, Search, Minus, Square, BookOpen, Plus, Image as ImageIcon, PenTool, FolderTree, GraduationCap, Copy, Check, Brain, Loader2, Trash2, HelpCircle, Play, Activity } from 'lucide-react';
+import { X, Monitor, Bot, Search, Minus, Square, BookOpen, Plus, Image as ImageIcon, PenTool, FolderTree, GraduationCap, Copy, Check, Brain, Loader2, Trash2, HelpCircle, Play, Activity, Terminal as TerminalIcon } from 'lucide-react';
 
 import { SystemHeader } from './SystemHeader';
 import { FileExplorer } from './FileExplorer';
