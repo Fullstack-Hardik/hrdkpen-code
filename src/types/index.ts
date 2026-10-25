@@ -99,7 +99,10 @@ export interface Extension {
   id: string;
   name: string;
   description: string;
-  category: 'formatter' | 'linter' | 'preview' | 'utility' | 'snippets' | 'autocomplete';
+  category: 'formatter' | 'linter' | 'preview' | 'utility' | 'snippets' | 'autocomplete' | 'ai' | 'git';
   enabled: boolean;
   builtIn: boolean;
+  icon?: string;
+  author?: string;
+  version?: string;
 }

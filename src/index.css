@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,300..700;1,300..700&family=Fira+Code:wght@300..700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -58,8 +58,9 @@
     --editor-warning:      var(--yellow);
     --editor-error:        var(--red);
     --editor-info:         var(--blue);
+  }
 
-    /* ==========================================================================
+  /* ==========================================================================
      THEME: Pure Black (AMOLED / High Contrast)
      ========================================================================== */
   .theme-pure-black {
@@ -170,49 +171,72 @@
   /* ==========================================================================
      THEME: Visual Studio Light
      ========================================================================== */
+  .theme-vs-light {
+    --crust:    0 0% 95%;
+    --mantle:   0 0% 98%;
+    --base:     0 0% 100%;
+    --surface0: 0 0% 92%;
+    --surface1: 0 0% 86%;
+    --surface2: 0 0% 78%;
+    --overlay0: 0 0% 50%;
+    --overlay1: 0 0% 35%;
+    --overlay2: 0 0% 25%;
+    --text:     0 0% 12%;
+    --subtext0: 0 0% 20%;
+    --subtext1: 0 0% 28%;
 
-    /* === Activity Bar === */
-    --activity-bar-bg:     var(--crust);
-    --activity-bar-width:  48px;
+    --blue:     212 92% 45%;
+    --lavender: 212 70% 55%;
+    --mauve:    280 65% 45%;
+    --red:      350 75% 50%;
+    --maroon:   350 75% 55%;
+    --peach:    25  85% 45%;
+    --yellow:   45  90% 40%;
+    --green:    120 50% 35%;
+    --teal:     180 60% 40%;
+    --sky:      195 85% 45%;
+    --sapphire: 210 80% 45%;
+    --pink:     330 65% 50%;
 
-    /* === Glass Effect === */
-    --glass-bg:     rgba(13, 13, 20, 0.72);
-    --glass-border: rgba(255, 255, 255, 0.07);
-    --glass-blur:   16px;
+    --editor-bg: #ffffff;
+    --editor-sidebar: #f3f3f3;
+    --editor-panel: #f8f8f8;
+    --editor-active-tab: #ffffff;
+    --editor-border: #e5e5e5;
+    --editor-text: #1e1e1e;
+    --editor-text-muted: #6e6e6e;
+    --editor-text-dim: #999999;
+  }
 
-    /* === Shadows === */
-    --shadow-sm:  0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
-    --shadow-md:  0 4px 12px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
-    --shadow-lg:  0 12px 32px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.4);
-    --shadow-glow-blue: 0 0 20px hsl(var(--blue) / 0.25);
-    --shadow-glow-green: 0 0 20px hsl(var(--green) / 0.25);
+  /* ==========================================================================
+     THEME: Monokai
+     ========================================================================== */
+  .theme-monokai {
+    --crust:    70 8% 11%;
+    --mantle:   70 8% 13%;
+    --base:     70 8% 15%;
+    --surface0: 70 8% 20%;
+    --surface1: 70 8% 26%;
+    --surface2: 70 8% 32%;
+    --overlay0: 70 8% 50%;
+    --overlay1: 70 8% 65%;
+    --overlay2: 70 8% 80%;
+    --text:     60 30% 96%;
+    --subtext0: 60 20% 90%;
+    --subtext1: 60 15% 85%;
 
-    /* === Shadcn Design Tokens === */
-    --background:           var(--editor-bg);
-    --foreground:           var(--editor-text);
-    --card:                 var(--editor-sidebar);
-    --card-foreground:      var(--editor-text);
-    --popover:              var(--editor-panel);
-    --popover-foreground:   var(--editor-text);
-    --primary:              var(--blue);
-    --primary-foreground:   0 0% 100%;
-    --secondary:            var(--surface0);
-    --secondary-foreground: var(--editor-text);
-    --muted:                var(--surface0);
-    --muted-foreground:     var(--overlay1);
-    --accent:               var(--surface0);
-    --accent-foreground:    var(--editor-text);
-    --destructive:          var(--red);
-    --destructive-foreground: 0 0% 100%;
-    --border:               var(--surface1);
-    --input:                var(--surface0);
-    --ring:                 var(--blue);
-    --radius:               0.5rem;
-
-    /* === Transitions === */
-    --tx-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --tx-fast:   all 0.1s ease-out;
-    --tx-spring: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --blue:     190 90% 65%;
+    --lavender: 190 70% 75%;
+    --mauve:    338 95% 56%;
+    --red:      338 95% 56%;
+    --maroon:   338 90% 60%;
+    --peach:    25  95% 60%;
+    --yellow:   54  70% 68%;
+    --green:    80  75% 60%;
+    --teal:     175 60% 60%;
+    --sky:      190 90% 65%;
+    --sapphire: 260 90% 75%;
+    --pink:     338 95% 56%;
   }
 
   .theme-dracula {

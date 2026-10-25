@@ -187,26 +187,91 @@ export const SettingsPanel = ({ settings, onUpdate, onReset, onClose, initialCat
                 </div>
               </div>
 
-              {/* Font Preview */}
+              {/* Theme & Font Live Preview Frame */}
               <div className="space-y-2">
-                <Label className="text-xs font-semibold text-editor-text-muted uppercase tracking-wider ml-1">Live Preview</Label>
-                <div
-                  className="rounded-xl border border-editor-border p-5 bg-[hsl(var(--crust))] text-editor-text overflow-hidden shadow-sm"
-                  style={{ fontFamily: settings.fontFamily, fontSize: settings.fontSize }}
-                >
-                  <span className="text-[hsl(var(--blue))]">function</span>{' '}
-                  <span className="text-[hsl(var(--yellow))]">greet</span>
-                  <span className="text-editor-text">(</span>
-                  <span className="text-[hsl(var(--red))]">name</span>
-                  <span className="text-editor-text">) {'{'}</span>
-                  <br />
-                  <span style={{ marginLeft: settings.tabSize * 8 }}>
-                    <span className="text-[hsl(var(--blue))]">return</span>{' '}
-                    <span className="text-[hsl(var(--green))]">`Hello, {'${name}'}!`</span>
-                    <span className="text-editor-text">;</span>
+                <div className="flex items-center justify-between ml-1">
+                  <Label className="text-xs font-semibold text-editor-text-muted uppercase tracking-wider">Live Code Preview</Label>
+                  <span className="text-[11px] font-mono text-editor-text-muted">
+                    {THEMES.find(t => t.value === settings.theme)?.label || settings.theme} • {FONT_LABELS[settings.fontFamily] || settings.fontFamily.split(',')[0]}
                   </span>
-                  <br />
-                  <span className="text-editor-text">{'}'}</span>
+                </div>
+                
+                {/* Mock Editor Window */}
+                <div className="rounded-xl border border-editor-border overflow-hidden shadow-lg bg-[hsl(var(--mantle))]">
+                  {/* Window Title Bar */}
+                  <div className="flex items-center justify-between px-4 py-2 border-b border-editor-border/60 bg-[hsl(var(--crust))]">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+                      <span className="ml-2 text-[11px] font-mono text-editor-text-dim">preview.ts — HRDK Pen</span>
+                    </div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">
+                      {settings.fontSize}px • Tab: {settings.tabSize}
+                    </span>
+                  </div>
+
+                  {/* Code Body with Line Numbers */}
+                  <div
+                    className="p-4 flex bg-[hsl(var(--base))] select-none"
+                    style={{ fontFamily: settings.fontFamily, fontSize: `${settings.fontSize}px`, lineHeight: 1.6 }}
+                  >
+                    {/* Line numbers */}
+                    <div className="pr-4 select-none text-right font-mono text-editor-text-dim/60 space-y-0.5 border-r border-editor-border/40 min-w-[28px]">
+                      <div>1</div>
+                      <div>2</div>
+                      <div>3</div>
+                      <div>4</div>
+                      <div>5</div>
+                      <div>6</div>
+                    </div>
+
+                    {/* Syntax Highlighted Code */}
+                    <div className="pl-4 flex-1 overflow-x-auto space-y-0.5 font-mono">
+                      <div>
+                        <span className="text-[hsl(var(--mauve))] font-medium">import</span>{' '}
+                        <span className="text-editor-text">{'{'}</span>{' '}
+                        <span className="text-[hsl(var(--yellow))]">useState</span>
+                        <span className="text-editor-text">,</span>{' '}
+                        <span className="text-[hsl(var(--yellow))]">useEffect</span>{' '}
+                        <span className="text-editor-text">{'}'}</span>{' '}
+                        <span className="text-[hsl(var(--mauve))] font-medium">from</span>{' '}
+                        <span className="text-[hsl(var(--green))]">'react'</span>
+                        <span className="text-editor-text">;</span>
+                      </div>
+                      <div>
+                        <span className="text-[hsl(var(--mauve))] font-medium">export function</span>{' '}
+                        <span className="text-[hsl(var(--blue))] font-semibold">Hero</span>
+                        <span className="text-editor-text">() {'{'}</span>
+                      </div>
+                      <div style={{ paddingLeft: `${settings.tabSize * 10}px` }}>
+                        <span className="text-[hsl(var(--mauve))] font-medium">const</span>{' '}
+                        <span className="text-editor-text">[count, setCount]</span>{' '}
+                        <span className="text-[hsl(var(--sky))]">=</span>{' '}
+                        <span className="text-[hsl(var(--blue))]">useState</span>
+                        <span className="text-editor-text">(</span>
+                        <span className="text-[hsl(var(--peach))]">0</span>
+                        <span className="text-editor-text">);</span>
+                      </div>
+                      <div style={{ paddingLeft: `${settings.tabSize * 10}px` }}>
+                        <span className="text-[hsl(var(--mauve))] font-medium">return</span>{' '}
+                        <span className="text-[hsl(var(--teal))]">&lt;button</span>{' '}
+                        <span className="text-[hsl(var(--peach))]">className</span>
+                        <span className="text-editor-text">=</span>
+                        <span className="text-[hsl(var(--green))]">"btn-neon"</span>
+                        <span className="text-[hsl(var(--teal))]">&gt;</span>
+                        <span className="text-editor-text">Count: {'{count}'}</span>
+                        <span className="text-[hsl(var(--teal))]">&lt;/button&gt;</span>
+                        <span className="text-editor-text">;</span>
+                      </div>
+                      <div>
+                        <span className="text-editor-text">{'}'}</span>
+                      </div>
+                      <div className="text-[hsl(var(--overlay1))] italic text-[0.85em] pt-1">
+                        // Active Theme: {settings.theme} | Font Ligatures: On
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -328,16 +393,29 @@ export const SettingsPanel = ({ settings, onUpdate, onReset, onClose, initialCat
           {activeCategory === 'extensions' && (
             <div className="space-y-8 animate-fade-in">
               <div className="space-y-2">
-                <Label className="text-xs font-semibold text-editor-text-muted uppercase tracking-wider ml-1">Built-in Extensions</Label>
-                <div className="bg-[hsl(var(--crust))] border border-editor-border rounded-xl overflow-hidden shadow-sm">
-                  {extensions.map((ext, idx) => (
-                    <div key={ext.id} className={`flex items-start justify-between p-4 ${idx !== extensions.length - 1 ? 'border-b border-editor-border' : ''}`}>
+                <div className="flex items-center justify-between ml-1">
+                  <Label className="text-xs font-semibold text-editor-text-muted uppercase tracking-wider">Top Extensions & Tooling</Label>
+                  <span className="text-[11px] text-editor-text-muted">{extensions.filter(e => e.enabled).length} of {extensions.length} active</span>
+                </div>
+                <div className="bg-[hsl(var(--crust))] border border-editor-border rounded-xl overflow-hidden shadow-sm divide-y divide-editor-border/60">
+                  {extensions.map(ext => (
+                    <div key={ext.id} className="flex items-start justify-between p-4 hover:bg-[hsl(var(--surface0)/0.3)] transition-colors">
                       <div className="flex flex-col pr-4">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Label className="text-[13px] font-medium text-editor-text">{ext.name}</Label>
-                          <span className="px-1.5 py-0.5 rounded text-[9px] bg-editor-active-tab text-editor-text-muted uppercase tracking-wider border border-editor-border/50">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <Label className="text-[13px] font-semibold text-editor-text">{ext.name}</Label>
+                          {ext.version && (
+                            <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                              v{ext.version}
+                            </span>
+                          )}
+                          <span className="px-1.5 py-0.2 rounded text-[9px] font-medium bg-editor-active-tab text-editor-text-muted uppercase tracking-wider border border-editor-border/50">
                             {ext.category}
                           </span>
+                          {ext.author && (
+                            <span className="text-[10px] text-editor-text-dim">
+                              by {ext.author}
+                            </span>
+                          )}
                         </div>
                         <span className="text-[11px] text-editor-text-muted leading-relaxed">{ext.description}</span>
                       </div>
