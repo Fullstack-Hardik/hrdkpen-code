@@ -1,15 +1,13 @@
 import type { ReactNode } from 'react';
 import {
   Settings2,
-  Files,
-  TerminalSquare,
-  BookOpen,
-  Image as ImageIcon,
-  FolderTree,
-  PenTool,
-  GraduationCap,
-  Search,
-  HelpCircle,
+  FolderGit2,
+  SearchCode,
+  FolderKanban,
+  BookMarked,
+  Palette,
+  Compass,
+  Terminal,
 } from 'lucide-react';
 
 export type ActivityBarView =
@@ -37,6 +35,7 @@ interface BarItem {
   icon: ReactNode;
   label: string;
   position: 'top' | 'bottom';
+  badgeColor?: string;
 }
 
 export const ActivityBar = ({
@@ -48,12 +47,12 @@ export const ActivityBar = ({
   errorCount,
 }: ActivityBarProps) => {
   const topItems: BarItem[] = [
-    { id: 'explorer',     icon: <Files className="w-5 h-5" />,          label: 'Explorer',          position: 'top' },
-    { id: 'search',       icon: <Search className="w-5 h-5" />,        label: 'Search',            position: 'top' },
-    { id: 'projects',     icon: <FolderTree className="w-5 h-5" />,    label: 'Projects',          position: 'top' },
-    { id: 'docs',         icon: <BookOpen className="w-5 h-5" />,      label: 'Docs & Help',       position: 'top' },
-    { id: 'excalidraw',   icon: <PenTool className="w-5 h-5" />,       label: 'Whiteboard',        position: 'top' },
-    { id: 'mdn',          icon: <GraduationCap className="w-5 h-5" />, label: 'DevDocs',           position: 'top' },
+    { id: 'explorer',     icon: <FolderGit2 className="w-5 h-5 text-sky-400 group-hover:text-sky-300" />,     label: 'File Explorer',     position: 'top' },
+    { id: 'search',       icon: <SearchCode className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" />, label: 'Global Search',     position: 'top' },
+    { id: 'projects',     icon: <FolderKanban className="w-5 h-5 text-purple-400 group-hover:text-purple-300" />, label: 'Project Workspaces', position: 'top' },
+    { id: 'docs',         icon: <BookMarked className="w-5 h-5 text-emerald-400 group-hover:text-emerald-300" />, label: 'Documentation',     position: 'top' },
+    { id: 'excalidraw',   icon: <Palette className="w-5 h-5 text-amber-400 group-hover:text-amber-300" />,       label: 'Whiteboard',        position: 'top' },
+    { id: 'mdn',          icon: <Compass className="w-5 h-5 text-teal-400 group-hover:text-teal-300" />,        label: 'Developer Docs',    position: 'top' },
   ];
 
   const renderItem = (item: BarItem) => {
@@ -119,7 +118,7 @@ export const ActivityBar = ({
           aria-pressed={terminalOpen}
         >
           {terminalOpen && <span className="activity-bar-indicator" />}
-          <TerminalSquare className="w-5 h-5 relative z-10" />
+          <Terminal className="w-5 h-5 relative z-10 text-emerald-400" />
           {errorCount > 0 && (
             <span
               className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white z-20"

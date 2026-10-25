@@ -112,11 +112,13 @@ export const SystemHeader = ({
           <div className="mac-btn mac-btn-max" />
         </div>
 
-        <div className="flex items-center gap-2 px-4 h-full border-r border-editor-border">
-          <div className="flex items-center gap-1.5 rounded-md px-2 py-1 bg-blue-500/10">
-            <Code2 className="w-3.5 h-3.5 text-blue-500" />
-            <span className="text-[13px] font-bold tracking-tight text-editor-text">
-              HRDK<span className="text-blue-500">Pen</span>
+        <div className="flex items-center gap-2 px-3.5 h-full border-r border-editor-border">
+          <div className="flex items-center gap-2 rounded-lg px-2.5 py-1 bg-gradient-to-r from-blue-500/15 via-indigo-500/10 to-purple-500/15 border border-blue-500/30 shadow-sm">
+            <div className="w-5 h-5 rounded-md bg-blue-500 flex items-center justify-center text-white shadow-sm">
+              <Code2 className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-[13px] font-black tracking-wider text-editor-text">
+              HRDK<span className="text-blue-400">PEN</span>
             </span>
           </div>
         </div>

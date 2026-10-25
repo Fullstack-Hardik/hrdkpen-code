@@ -651,9 +651,9 @@
 
   /* ─── Tab styles ─── */
   .editor-tab {
-    @apply flex items-center gap-1.5 px-3 py-2 text-xs border-r cursor-pointer select-none flex-shrink-0;
-    min-width: 80px;
-    max-width: 180px;
+    @apply flex items-center gap-2 px-3.5 py-2 text-xs border-r cursor-pointer select-none flex-shrink-0;
+    min-width: 90px;
+    max-width: 200px;
     border-right-color: hsl(var(--surface1));
     color: hsl(var(--overlay1));
     background-color: hsl(var(--editor-inactive-tab));
@@ -666,8 +666,10 @@
   .editor-tab.active {
     color: hsl(var(--text));
     background-color: hsl(var(--editor-bg));
-    border-top: 1px solid hsl(var(--blue));
+    border-top: 2px solid hsl(var(--blue));
+    box-shadow: inset 0 1px 0 0 hsl(var(--blue) / 0.4);
     position: relative;
+    font-weight: 500;
   }
 
   .tab-close {

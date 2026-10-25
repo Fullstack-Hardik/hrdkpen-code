@@ -8,7 +8,7 @@ import {
   ContextMenuTrigger,
   ContextMenuSeparator,
 } from '@/components/ui/context-menu';
-import { X, Monitor, Bot, Search, Minus, Square, BookOpen, Plus, Image as ImageIcon, PenTool, FolderTree, GraduationCap, Copy, Check, Brain, Loader2, Trash2, HelpCircle, Play, Activity, Terminal as TerminalIcon } from 'lucide-react';
+import { X, Monitor, Bot, Search, Minus, Square, BookOpen, Plus, Image as ImageIcon, PenTool, FolderTree, GraduationCap, Copy, Check, Brain, Loader2, Trash2, HelpCircle, Play, Activity, Terminal as TerminalIcon, Sparkles, Globe, Eye, Layers } from 'lucide-react';
 
 import { SystemHeader } from './SystemHeader';
 import { FileExplorer } from './FileExplorer';
@@ -1176,65 +1176,81 @@ http.createServer((req, res) => {
                 <ResizableHandle withHandle />
                 <ResizablePanel defaultSize={25} minSize={20} maxSize={50}>
                   <div className="flex flex-col h-full border-l border-editor-border">
-                    {/* Right panel tabs (macOS Segmented Control Style) */}
+                    {/* Right panel tabs (Modern Glassmorphic Tab Bar) */}
                     <div
-                      className="flex items-center justify-between flex-shrink-0 px-3"
-                      style={{
-                        height: 48,
-                        background: 'hsl(var(--crust))',
-                        borderBottom: '1px solid hsl(var(--surface1))',
-                      }}
+                      className="flex items-center justify-between flex-shrink-0 px-3 bg-[hsl(var(--crust))] border-b border-[hsl(var(--surface1))]"
+                      style={{ height: 44 }}
                     >
-                      <div className="flex items-center p-1 rounded-lg bg-editor-bg border border-editor-border/50 shadow-inner">
+                      <div className="flex items-center p-0.5 rounded-lg bg-[hsl(var(--mantle))] border border-[hsl(var(--surface1))] shadow-sm">
                         <button
-                          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-[11px] font-semibold tracking-wide transition-all duration-200 ${rightPanel === 'preview' ? 'bg-editor-panel text-editor-text shadow-[0_1px_3px_rgba(0,0,0,0.3)] ring-1 ring-white/5' : 'text-editor-text-muted hover:text-editor-text'}`}
+                          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                            rightPanel === 'preview' 
+                              ? 'bg-[hsl(var(--surface0))] text-blue-400 font-semibold shadow-sm border border-[hsl(var(--surface2))]' 
+                              : 'text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0)/0.4)]'
+                          }`}
                           onClick={() => setRightPanel('preview')}
                         >
-                          <Monitor className={`w-3.5 h-3.5 ${rightPanel === 'preview' ? 'text-blue-400' : ''}`} />
-                          Preview
+                          <Globe className={`w-3.5 h-3.5 ${rightPanel === 'preview' ? 'text-blue-400 animate-pulse' : 'text-blue-400/70'}`} />
+                          <span>Browser Preview</span>
                         </button>
                         <button
-                          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-[11px] font-semibold tracking-wide transition-all duration-200 ${rightPanel === 'ai' ? 'bg-editor-panel text-editor-text shadow-[0_1px_3px_rgba(0,0,0,0.3)] ring-1 ring-white/5' : 'text-editor-text-muted hover:text-editor-text'}`}
+                          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                            rightPanel === 'ai' 
+                              ? 'bg-[hsl(var(--surface0))] text-purple-400 font-semibold shadow-sm border border-[hsl(var(--surface2))]' 
+                              : 'text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0)/0.4)]'
+                          }`}
                           onClick={() => setRightPanel('ai')}
                         >
-                          <Bot className={`w-3.5 h-3.5 ${rightPanel === 'ai' ? 'text-purple-400' : ''}`} />
-                          AI
+                          <Sparkles className={`w-3.5 h-3.5 ${rightPanel === 'ai' ? 'text-purple-400 animate-spin-slow' : 'text-purple-400/70'}`} />
+                          <span>AI Assistant</span>
                         </button>
                         <button
-                          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-[11px] font-semibold tracking-wide transition-all duration-200 ${rightPanel === 'docs' ? 'bg-editor-panel text-editor-text shadow-[0_1px_3px_rgba(0,0,0,0.3)] ring-1 ring-white/5' : 'text-editor-text-muted hover:text-editor-text'}`}
+                          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                            rightPanel === 'docs' 
+                              ? 'bg-[hsl(var(--surface0))] text-emerald-400 font-semibold shadow-sm border border-[hsl(var(--surface2))]' 
+                              : 'text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0)/0.4)]'
+                          }`}
                           onClick={() => setRightPanel('docs')}
                         >
-                          <BookOpen className={`w-3.5 h-3.5 ${rightPanel === 'docs' ? 'text-green-400' : ''}`} />
-                          Docs
+                          <BookOpen className={`w-3.5 h-3.5 ${rightPanel === 'docs' ? 'text-emerald-400' : 'text-emerald-400/70'}`} />
+                          <span>Docs</span>
                         </button>
                         <button
-                          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-[11px] font-semibold tracking-wide transition-all duration-200 ${rightPanel === 'assets' ? 'bg-editor-panel text-editor-text shadow-[0_1px_3px_rgba(0,0,0,0.3)] ring-1 ring-white/5' : 'text-editor-text-muted hover:text-editor-text'}`}
+                          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all ${
+                            rightPanel === 'assets' 
+                              ? 'bg-[hsl(var(--surface0))] text-amber-400 font-semibold shadow-sm border border-[hsl(var(--surface2))]' 
+                              : 'text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0)/0.4)]'
+                          }`}
                           onClick={() => setRightPanel('assets')}
                         >
-                          <ImageIcon className={`w-3.5 h-3.5 ${rightPanel === 'assets' ? 'text-orange-400' : ''}`} />
-                          Assets
+                          <Layers className={`w-3.5 h-3.5 ${rightPanel === 'assets' ? 'text-amber-400' : 'text-amber-400/70'}`} />
+                          <span>Assets</span>
                         </button>
                       </div>
                       
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => {
                             setSettingsCategory('diagnostics');
                             setShowSettings(true);
                           }}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-semibold tracking-wide transition-all duration-200 border border-editor-border/50 bg-editor-bg/50 hover:bg-editor-panel hover:text-editor-text ${doctorKit.status !== 'healthy' ? 'text-blue-400 border-blue-500/30 bg-blue-500/10' : 'text-editor-text-muted'}`}
-                          title="System Diagnostics"
+                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium transition-all border ${
+                            doctorKit.status !== 'healthy' 
+                              ? 'text-blue-400 border-blue-500/30 bg-blue-500/10' 
+                              : 'text-[hsl(var(--subtext0))] border-[hsl(var(--surface1))] bg-[hsl(var(--mantle))] hover:bg-[hsl(var(--surface0))]'
+                          }`}
+                          title="System Diagnostics & Self-Healing"
                         >
-                          <Activity className={`w-3.5 h-3.5 ${doctorKit.status === 'scanning' ? 'animate-pulse text-blue-400' : doctorKit.status === 'error' ? 'text-red-400' : 'text-green-400'}`} />
-                          Doctor Kit
+                          <Activity className={`w-3 h-3 ${doctorKit.status === 'scanning' ? 'animate-pulse text-blue-400' : doctorKit.status === 'error' ? 'text-red-400' : 'text-emerald-400'}`} />
+                          <span>DoctorKit</span>
                         </button>
-                        <div className="w-[1px] h-4 bg-editor-border mx-1"></div>
+                        <div className="w-[1px] h-3.5 bg-[hsl(var(--surface1))] mx-0.5"></div>
                         <button
                           onClick={() => setRightPanel(null)}
-                          className="w-7 h-7 flex items-center justify-center rounded-md text-editor-text-dim hover:text-editor-text hover:bg-editor-panel transition-all"
-                          title="Close panel"
+                          className="w-7 h-7 flex items-center justify-center rounded-md text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] transition-all"
+                          title="Hide Right Panel"
                         >
-                          <X className="w-4 h-4" />
+                          <X className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>

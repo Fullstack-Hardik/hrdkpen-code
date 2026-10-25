@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   RefreshCw, ExternalLink, Download, Monitor,
-  Smartphone, Tablet, Laptop, Bug
+  Smartphone, Tablet, Laptop, Bug, Globe, Lock, ShieldCheck, ArrowRight
 } from 'lucide-react';
 
 interface LivePreviewProps {
@@ -209,20 +209,14 @@ export const LivePreview = ({
   const dim = DEVICE_SIZES[device];
 
   return (
-    <div className="flex flex-col h-full bg-editor-bg">
-      {/* Toolbar */}
+    <div className="flex flex-col h-full bg-[hsl(var(--base))]">
+      {/* Modern Browser Chrome Toolbar */}
       <div
-        className="flex items-center justify-between px-3 flex-shrink-0"
-        style={{
-          height: 36,
-          borderBottom: '1px solid hsl(var(--surface1))',
-          background: 'hsl(var(--mantle))',
-        }}
+        className="flex items-center justify-between px-3.5 py-1.5 flex-shrink-0 bg-[hsl(var(--mantle))] border-b border-[hsl(var(--surface1))]"
       >
-        <div className="flex flex-1 items-center gap-2 mr-4 min-w-0">
-          <Monitor className="w-3.5 h-3.5 text-editor-text-muted flex-shrink-0" />
-          <span className="text-xs text-editor-text-muted font-medium flex-shrink-0">Preview</span>
-          <div className="flex items-center bg-editor-panel border border-editor-border rounded px-2 h-6 flex-1 max-w-[300px] min-w-[100px]">
+        <div className="flex flex-1 items-center gap-2 mr-3 min-w-0">
+          <div className="flex items-center bg-[hsl(var(--crust))] border border-[hsl(var(--surface1))] rounded-lg px-2.5 h-7 flex-1 max-w-[380px] shadow-sm focus-within:border-blue-500/60 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all">
+            <Lock className="w-3 h-3 text-emerald-400 mr-2 flex-shrink-0" />
             <form 
               className="flex-1 min-w-0"
               onSubmit={(e) => {
@@ -242,30 +236,35 @@ export const LivePreview = ({
                 type="text"
                 value={currentUrl}
                 onChange={e => setCurrentUrl(e.target.value)}
-                placeholder="https://hrdkpen.vercel.app/"
-                className="w-full bg-transparent border-none outline-none text-[10px] text-editor-text-dim truncate"
+                placeholder="https://hrdkpen.dev/preview"
+                className="w-full bg-transparent border-none outline-none text-xs text-[hsl(var(--text))] placeholder:text-[hsl(var(--overlay0))] font-mono truncate"
               />
             </form>
+            {serverUrl && (
+              <span className="flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono flex-shrink-0 border border-emerald-500/20">
+                LIVE
+              </span>
+            )}
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           {/* Device selector */}
-          <div className="flex items-center border border-editor-border rounded overflow-hidden">
+          <div className="flex items-center bg-[hsl(var(--crust))] border border-[hsl(var(--surface1))] rounded-lg p-0.5">
             {([
-              ['desktop', <Laptop className="w-3 h-3" />, 'Desktop'],
-              ['tablet',  <Tablet className="w-3 h-3" />, 'Tablet'],
-              ['mobile',  <Smartphone className="w-3 h-3" />, 'Mobile (375px)'],
+              ['desktop', <Laptop className="w-3.5 h-3.5" />, 'Desktop'],
+              ['tablet',  <Tablet className="w-3.5 h-3.5" />, 'Tablet'],
+              ['mobile',  <Smartphone className="w-3.5 h-3.5" />, 'Mobile (375px)'],
             ] as const).map(([mode, icon, label]) => (
               <button
                 key={mode}
                 onClick={() => setDevice(mode as DeviceMode)}
                 title={label}
-                className="px-2 py-1 transition-fast"
-                style={{
-                  background: device === mode ? 'hsl(var(--surface0))' : 'transparent',
-                  color: device === mode ? 'hsl(var(--text))' : 'hsl(var(--overlay1))',
-                }}
+                className={`p-1.5 rounded-md transition-all ${
+                  device === mode 
+                    ? 'bg-[hsl(var(--surface0))] text-blue-400 shadow-sm' 
+                    : 'text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))]'
+                }`}
               >
                 {icon}
               </button>
