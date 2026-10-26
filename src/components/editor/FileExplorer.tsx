@@ -425,7 +425,7 @@ export const FileExplorer = ({
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
-                      className="w-6 h-6 flex items-center justify-center rounded-md text-amber-400 hover:text-amber-300 hover:bg-[hsl(var(--surface0))] transition-all"
+                      className="w-6 h-6 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface0))] transition-all"
                       title="New from Template"
                     >
                       <Plus className="w-3.5 h-3.5" />

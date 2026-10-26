@@ -999,16 +999,6 @@ http.createServer((req, res) => {
         {/* Main layout */}
         <div className="flex flex-col flex-1 overflow-hidden min-h-0 relative">
           
-          <div className="absolute right-4 bottom-2 z-40 pointer-events-auto">
-             <DoctorKitBadge 
-               status={doctorKit.status} 
-               logs={doctorKit.logs} 
-               lastScan={doctorKit.lastScan} 
-               onScan={doctorKit.scan} 
-               subtle={true}
-             />
-          </div>
-          
           {isZenMode && (
             <button 
               onClick={handleToggleZenMode}
@@ -1582,40 +1572,82 @@ http.createServer((req, res) => {
                 </div>
               )}
               {bottomTab === 'help' && (
-                <div className="flex-1 overflow-y-auto p-4 bg-editor-bg text-editor-text custom-scrollbar">
-                  <div className="max-w-3xl mx-auto space-y-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-emerald-400 mb-2 border-b border-editor-border pb-2">Terminal Commands</h3>
-                      <p className="text-sm text-editor-text-muted mb-4">Click to copy a command to use in the terminal.</p>
-                      
-                      <div className="flex flex-col space-y-2">
-                        {[
-                          { cmd: 'npm run dev', desc: 'Starts the Vite dev server with Hot Module Replacement (HMR)' },
-                          { cmd: 'npm run build', desc: 'Creates an optimized production build in the dist folder' },
-                          { cmd: 'npm install', desc: 'Installs all dependencies listed in your package.json' },
-                          { cmd: 'help', desc: 'Displays this help documentation' },
-                        ].map(item => (
-                          <div key={item.cmd} className="flex items-center justify-between p-2 hover:bg-editor-panel/50 rounded group transition-colors">
-                            <div className="flex items-center gap-3">
-                              <code className="text-blue-400 font-mono text-sm bg-blue-500/10 px-2 py-1 rounded min-w-[120px] text-center">{item.cmd}</code>
-                              <span className="text-sm text-editor-text-muted">{item.desc}</span>
-                            </div>
+                <div className="flex-1 overflow-y-auto p-4 bg-[hsl(var(--mantle))] text-[hsl(var(--text))] custom-scrollbar">
+                  <div className="max-w-4xl mx-auto space-y-4">
+                    <div className="flex items-center justify-between border-b border-[hsl(var(--surface1))] pb-3">
+                      <div>
+                        <h3 className="text-sm font-semibold text-[hsl(var(--text))] flex items-center gap-2">
+                          <TerminalIcon className="w-4 h-4 text-emerald-400" />
+                          <span>Terminal & Shell Command Reference</span>
+                        </h3>
+                        <p className="text-xs text-[hsl(var(--overlay1))] mt-0.5">
+                          Every command can be executed directly in the active WebContainer terminal or copied to your clipboard.
+                        </p>
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[hsl(var(--surface0))] border border-[hsl(var(--surface1))] text-[hsl(var(--subtext0))]">
+                        Posix Shell / Node.js
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                      {[
+                        { cmd: 'npm run dev', cat: 'Server', desc: 'Starts the Vite dev server with instant Hot Module Replacement (HMR)' },
+                        { cmd: 'npm run build', cat: 'Build', desc: 'Compiles and bundles the production-optimized assets into /dist' },
+                        { cmd: 'npm test', cat: 'Test', desc: 'Executes the project test suite using Vitest or Jest' },
+                        { cmd: 'npm install --legacy-peer-deps', cat: 'Packages', desc: 'Installs all dependencies with legacy peer dependency resolution' },
+                        { cmd: 'node index.js', cat: 'Runtime', desc: 'Executes the target JavaScript file directly inside Node.js' },
+                        { cmd: 'npx -y create-vite@5.4.1 . --template react-ts', cat: 'Scaffold', desc: 'Scaffolds a clean React + TypeScript + Vite project' },
+                        { cmd: 'npm i lucide-react clsx tailwind-merge', cat: 'UI', desc: 'Installs essential modern React UI utilities and icons' },
+                        { cmd: 'npm i express cors dotenv', cat: 'Backend', desc: 'Installs Express server framework with CORS and env support' },
+                        { cmd: 'ls -la', cat: 'Filesystem', desc: 'Lists all files, permissions, and directories including hidden dotfiles' },
+                        { cmd: 'pwd', cat: 'Filesystem', desc: 'Prints the current working directory path of the WebContainer VFS' },
+                        { cmd: 'mkdir -p src/components', cat: 'Filesystem', desc: 'Recursively creates nested folders in the workspace' },
+                        { cmd: 'clear', cat: 'Terminal', desc: 'Clears the terminal output screen buffer' },
+                      ].map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="flex flex-col justify-between p-3 rounded-xl border border-[hsl(var(--surface1))] bg-[hsl(var(--crust))] hover:border-[hsl(var(--surface2))] transition-all group shadow-xs"
+                        >
+                          <div className="flex items-center justify-between gap-2 mb-1.5">
+                            <code className="text-xs font-mono font-semibold text-blue-400 bg-[hsl(var(--surface0))] px-2 py-0.5 rounded border border-[hsl(var(--surface1))] truncate max-w-[240px]">
+                              {item.cmd}
+                            </code>
+                            <span className="text-[9px] uppercase font-mono px-1.5 py-0.2 rounded bg-[hsl(var(--mantle))] text-[hsl(var(--overlay1))] border border-[hsl(var(--surface1))]">
+                              {item.cat}
+                            </span>
+                          </div>
+
+                          <p className="text-[11px] text-[hsl(var(--subtext0))] leading-relaxed mb-3">
+                            {item.desc}
+                          </p>
+
+                          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[hsl(var(--surface1))]/60">
                             <button
-                              onClick={(e) => {
+                              onClick={() => {
                                 navigator.clipboard.writeText(item.cmd);
-                                const btn = e.currentTarget;
-                                const original = btn.innerHTML;
-                                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-400"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-                                setTimeout(() => btn.innerHTML = original, 2000);
+                                toast({ title: 'Copied to Clipboard', description: item.cmd });
                               }}
-                              className="p-1.5 text-editor-text-dim opacity-0 group-hover:opacity-100 hover:text-editor-text hover:bg-editor-panel rounded transition-all"
-                              title="Copy command"
+                              className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium text-[hsl(var(--overlay1))] hover:text-white bg-[hsl(var(--mantle))] hover:bg-[hsl(var(--surface0))] border border-[hsl(var(--surface1))] transition-all"
+                              title="Copy command to clipboard"
                             >
-                              <Copy className="w-3.5 h-3.5" />
+                              <Copy className="w-3 h-3" />
+                              <span>Copy</span>
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setBottomTab('terminal');
+                                terminalRefs.current[activeTerminalId]?.execute(item.cmd);
+                              }}
+                              className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 transition-all shadow-xs"
+                              title={`Execute "${item.cmd}" in terminal`}
+                            >
+                              <Play className="w-3 h-3 fill-current" />
+                              <span>Run</span>
                             </button>
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

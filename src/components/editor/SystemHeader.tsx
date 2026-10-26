@@ -288,27 +288,30 @@ export const SystemHeader = ({
           </a>
         )}
 
-        {/* Run active file button */}
+        {/* Run active file button — Classic macOS Action */}
         {canRun && (
           <button
             onClick={onRun}
-            className="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11px] font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm shadow-emerald-600/30 active:scale-95 transition-all"
+            className="flex items-center gap-1.5 h-7 px-3 rounded-lg text-xs font-medium text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 active:bg-emerald-500/30 border border-emerald-500/25 transition-all shadow-xs"
             title="Run Code (Ctrl+Enter)"
           >
             <Play className="w-3 h-3 fill-current" />
-            <span className="hidden sm:inline">Run</span>
+            <span className="font-semibold">Run</span>
+            <kbd className="hidden lg:inline text-[9px] px-1 py-0.2 rounded bg-emerald-500/15 border border-emerald-500/20 text-emerald-300 font-mono">
+              ^↵
+            </kbd>
           </button>
         )}
 
-        {/* Publish Pill Button */}
+        {/* Publish Pill Button — Classic macOS Accent */}
         {canPublish && (
           <button
             onClick={onPublish}
-            className="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11px] font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm shadow-blue-600/30 active:scale-95 transition-all"
+            className="flex items-center gap-1.5 h-7 px-3 rounded-lg text-xs font-medium text-[hsl(var(--text))] bg-[hsl(var(--surface0))] hover:bg-[hsl(var(--surface1))] active:bg-[hsl(var(--surface2))] border border-[hsl(var(--surface2))] transition-all shadow-xs"
             title="Publish to the web"
           >
-            <Rocket className="w-3 h-3" />
-            <span className="hidden sm:inline">Publish</span>
+            <Rocket className="w-3 h-3 text-blue-400" />
+            <span className="font-semibold">Publish</span>
           </button>
         )}
 

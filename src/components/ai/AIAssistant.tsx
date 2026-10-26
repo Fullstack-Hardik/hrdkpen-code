@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { 
-  Bot, Trash2, Settings, ChevronDown, Key, ExternalLink, X, 
-  Send, Copy, Check, User, Loader2 
+  Bot, Trash2, Settings2, X, Send, Copy, Check, User, Loader2, Sparkles, Code2, Lightbulb, Zap, Terminal
 } from 'lucide-react';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 export interface AIAssistantRef {
   submitPrompt: (prompt: string) => void;
@@ -10,27 +10,38 @@ export interface AIAssistantRef {
 }
 
 const personas = {
+  tech: {
+    name: 'Architect & Coder',
+    system: "You are an expert senior staff software engineer, system architect, and coding tutor. Provide production-ready, clean code answers, best practices guidance, optimization strategies, and thorough comments.",
+    desc: "Production code, architecture diagrams, debugging, and optimizations.",
+    badge: 'Coding'
+  },
   helpful: {
+    name: 'General Assistant',
     system: "You are a professional, helpful, and polite artificial intelligence assistant. Answer questions clearly, accurately, and thoroughly with balanced insights.",
-    desc: "A friendly, balanced, and smart assistant ready to respond to anything."
+    desc: "General reasoning, task breakdown, and technical explanations.",
+    badge: 'General'
   },
   creative: {
-    system: "You are an imaginative storyteller, a creative writer, and a playful brainstorming partner. Utilize rich metaphors, engaging words, and narrative formats when responding.",
-    desc: "An imaginative, descriptive writer great at stories, analogies, and concepts."
-  },
-  tech: {
-    system: "You are an expert software developer, technical architect, and logic tutor. Provide precise, clean code answers, best practices guidance, optimization strategies, and thorough comments.",
-    desc: "Code assistant focused on exact solutions, documentation, and logic."
-  },
-  sarcastic: {
-    system: "You are a humorous, slightly sarcastic, witty friend. Keep answers brief, slightly cheeky, or comical, but still fundamentally helpful beneath the snark.",
-    desc: "A cheeky sidekick that uses humor, wit, and friendly banter."
+    name: 'Creative Engineer',
+    system: "You are an imaginative product designer and creative engineer. Brainstorm novel UX ideas, CSS visual flourishes, and modern web application features.",
+    desc: "UI/UX ideas, visual design, and creative product thinking.",
+    badge: 'Design'
   },
   academic: {
-    system: "You are a scholarly research academic. Use formal vocabulary, objective structure, precise descriptions, and structured breakdowns (bullet points, clear headers) to outline complex theoretical ideas.",
-    desc: "Objective researcher using structured, analytical vocabulary."
+    name: 'Computer Scientist',
+    system: "You are a computer science professor and algorithms researcher. Use formal precision, big-O analysis, and structured breakdowns to explain data structures and algorithms.",
+    desc: "Algorithms, complexity analysis, and deep CS theory.",
+    badge: 'Theory'
   }
 };
+
+const QUICK_PROMPTS = [
+  { icon: <Code2 className="w-3.5 h-3.5 text-blue-400" />, label: 'Explain this code', prompt: 'Can you explain how the active file works and its architecture?' },
+  { icon: <Zap className="w-3.5 h-3.5 text-amber-400" />, label: 'Find bugs & edge cases', prompt: 'Review my code for potential bugs, security issues, and edge cases.' },
+  { icon: <Terminal className="w-3.5 h-3.5 text-emerald-400" />, label: 'Refactor cleanly', prompt: 'Suggest clean TypeScript refactoring and design improvements.' },
+  { icon: <Lightbulb className="w-3.5 h-3.5 text-purple-400" />, label: 'Write unit tests', prompt: 'Write comprehensive Jest / Vitest unit tests for this code.' },
+];
 
 interface Message {
   role: 'user' | 'assistant';
@@ -44,26 +55,27 @@ const parseMarkdown = (text: string) => {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
-  // Code blocks
+  // Code blocks with syntax badge & copy friendly
   html = html.replace(/```([\w-]*)\n([\s\S]*?)```/g, function(_, lang, code) {
-    return `<div class="my-3 overflow-hidden rounded-xl border border-editor-border bg-[hsl(var(--crust))] text-editor-text">
-        <div class="flex justify-between items-center px-4 py-1.5 bg-[hsl(var(--mantle))] text-xs text-editor-text-muted select-none">
+    return `<div class="my-3 overflow-hidden rounded-xl border border-[hsl(var(--surface1))] bg-[hsl(var(--crust))] text-[hsl(var(--text))]">
+        <div class="flex justify-between items-center px-3 py-1.5 bg-[hsl(var(--mantle))] text-[11px] font-mono text-[hsl(var(--overlay1))] border-b border-[hsl(var(--surface1))]">
             <span>${lang || 'code'}</span>
+            <span class="text-[9px] uppercase tracking-wider text-[hsl(var(--overlay0))]">Press to select</span>
         </div>
-        <pre class="p-4 overflow-x-auto text-xs font-mono leading-relaxed"><code>${code.trim()}</code></pre>
+        <pre class="p-3 overflow-x-auto text-[11px] font-mono leading-relaxed custom-scrollbar"><code>${code.trim()}</code></pre>
     </div>`;
   });
 
   // Inline Code
-  html = html.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-[hsl(var(--surface0))] text-[hsl(var(--blue))] font-mono text-xs rounded-md">$1</code>');
+  html = html.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-[hsl(var(--surface0))] text-blue-400 font-mono text-[11px] rounded border border-[hsl(var(--surface1))]">$1</code>');
   // Bold
-  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold text-white">$1</strong>');
   // Italic
-  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  html = html.replace(/\*([^*]+)\*/g, '<em class="text-[hsl(var(--subtext1))]">$1</em>');
   // Unordered list items
-  html = html.replace(/^\s*-\s+(.+)$/gm, '<li class="ml-4 list-disc">$1</li>');
+  html = html.replace(/^\s*-\s+(.+)$/gm, '<li class="ml-4 list-disc text-[hsl(var(--subtext1))]">$1</li>');
   // Ordered list items
-  html = html.replace(/^\s*\d+\.\s+(.+)$/gm, '<li class="ml-4 list-decimal">$1</li>');
+  html = html.replace(/^\s*\d+\.\s+(.+)$/gm, '<li class="ml-4 list-decimal text-[hsl(var(--subtext1))]">$1</li>');
   // Paragraphs & Linebreaks
   html = html.replace(/\n/g, '<br>');
 
@@ -72,11 +84,12 @@ const parseMarkdown = (text: string) => {
 
 export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
-  const [selectedPersona, setSelectedPersona] = useState<keyof typeof personas>('helpful');
+  const [selectedPersona, setSelectedPersona] = useState<keyof typeof personas>('tech');
   const [apiKey, setApiKey] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [userInput, setUserInput] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -115,7 +128,7 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
   const autoResizeTextarea = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 144)}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
     }
   };
 
@@ -136,7 +149,7 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
     setIsGenerating(true);
     setUserInput('');
     if (textareaRef.current) {
-      textareaRef.current.style.height = '52px';
+      textareaRef.current.style.height = '42px';
     }
 
     const newHistory = [...chatHistory, { role: 'user' as const, content: text }];
@@ -148,8 +161,13 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
       setChatHistory(updatedHistory);
       localStorage.setItem('chatHistory', JSON.stringify(updatedHistory));
     } catch (err) {
-      console.error(err);
-      setChatHistory(prev => [...prev, { role: 'assistant', content: '**API Key Required:** To use the AI in this standalone React app, please click the Settings (gear) icon in the top right and enter a free Groq API key.' }]);
+      setChatHistory(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: 'I am ready to help you with your project! You can either add a free **Groq API key** in Settings (gear icon), or ask any coding/architectural question directly.'
+        }
+      ]);
     } finally {
       setIsGenerating(false);
       textareaRef.current?.focus();
@@ -158,7 +176,7 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
 
   const callGroqAPI = async (history: Message[], systemPrompt?: string) => {
     const key = apiKey.trim() || import.meta.env.VITE_GROQ_API_KEY || '';
-    if (!key) throw new Error("No API key");
+    if (!key) throw new Error("No API key configured");
 
     const apiUrl = `https://api.groq.com/openai/v1/chat/completions`;
     const messages = systemPrompt 
@@ -185,86 +203,165 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
     return result.choices?.[0]?.message?.content || '';
   };
 
+  const copyMessage = (content: string, index: number) => {
+    navigator.clipboard.writeText(content);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
+
   return (
-    <div className="flex flex-col h-full bg-editor-bg text-editor-text relative">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-editor-border bg-[hsl(var(--mantle))] flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-lg bg-[hsl(var(--blue)/0.2)] text-[hsl(var(--blue))] flex items-center justify-center">
-            <Bot size={18} />
+    <div className="flex flex-col h-full bg-[hsl(var(--mantle))] text-[hsl(var(--text))] relative select-none">
+      {/* Sleek macOS Toolbar Header */}
+      <div className="flex items-center justify-between px-3 py-2 border-b border-[hsl(var(--surface1))] bg-[hsl(var(--crust))] flex-shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-md bg-[hsl(var(--surface0))] border border-[hsl(var(--surface2))] flex items-center justify-center text-[hsl(var(--text))]">
+            <Sparkles className="w-3.5 h-3.5 text-purple-400" />
           </div>
-          <div>
-            <h1 className="font-semibold text-sm flex items-center gap-2">AI</h1>
-            <p className="text-[10px] text-editor-text-muted flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Ready to assist
-            </p>
-          </div>
+          <span className="text-xs font-semibold text-[hsl(var(--text))] tracking-tight">AI Developer Bot</span>
+          <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-[hsl(var(--surface0))] text-[hsl(var(--overlay1))] border border-[hsl(var(--surface1))]">
+            {personas[selectedPersona].name}
+          </span>
         </div>
+
         <div className="flex items-center gap-1">
-          <button onClick={() => { setChatHistory([]); localStorage.removeItem('chatHistory'); }} className="p-2 rounded text-red-400 hover:bg-red-400/10 transition-colors" title="Clear Chat">
-            <Trash2 size={16} />
-          </button>
-          <button onClick={() => setShowSettings(!showSettings)} className="p-2 rounded text-editor-text-muted hover:bg-editor-active-tab transition-colors" title="Settings">
-            <Settings size={16} />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => { setChatHistory([]); localStorage.removeItem('chatHistory'); }}
+                aria-label="Clear Chat"
+                className="h-6 w-6 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-rose-400 hover:bg-[hsl(var(--surface0))] transition-all"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">Clear Conversation</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                aria-label="AI Settings"
+                className={`h-6 w-6 flex items-center justify-center rounded-md transition-all ${
+                  showSettings ? 'bg-[hsl(var(--surface1))] text-white' : 'text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))]'
+                }`}
+              >
+                <Settings2 className="w-3.5 h-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">Configure Persona & Keys</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Chat Area */}
-        <div className="flex-1 flex flex-col min-w-0">
-          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
-            {chatHistory.length === 0 && (
-              <div className="flex items-start gap-3.5 max-w-2xl">
-                <div className="h-8 w-8 rounded-lg bg-[hsl(var(--blue)/0.2)] text-[hsl(var(--blue))] flex items-center justify-center shrink-0">
-                  <Bot size={16} />
+        <div className="flex-1 flex flex-col min-w-0 bg-[hsl(var(--base))]">
+          {/* Chat Messages */}
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-3.5 space-y-3.5 custom-scrollbar select-text">
+            {chatHistory.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center px-4 py-6 space-y-4">
+                <div className="w-10 h-10 rounded-2xl bg-[hsl(var(--surface0))] border border-[hsl(var(--surface2))] flex items-center justify-center shadow-sm">
+                  <Bot className="w-5 h-5 text-purple-400" />
                 </div>
-                <div className="bg-[hsl(var(--surface0))] rounded-2xl rounded-tl-none p-3 shadow-sm text-sm">
-                  <p className="font-medium text-editor-text mb-1">Welcome back!</p>
-                  <p className="text-editor-text-muted">I am your customizable Gemini companion. You can configure my persona in the settings, or start typing below!</p>
+                <div>
+                  <h3 className="text-xs font-semibold text-[hsl(var(--text))]">Ready to assist your coding session</h3>
+                  <p className="text-[11px] text-[hsl(var(--overlay1))] mt-1 max-w-xs">
+                    Ask questions, optimize logic, review code, or generate unit tests.
+                  </p>
+                </div>
+
+                {/* Quick Prompts */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-md pt-2">
+                  {QUICK_PROMPTS.map((qp, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setUserInput(qp.prompt);
+                        handleFormSubmit(new Event('submit') as any, qp.prompt);
+                      }}
+                      className="flex items-center gap-2 p-2.5 rounded-lg border border-[hsl(var(--surface1))] bg-[hsl(var(--crust))] hover:bg-[hsl(var(--surface0))] text-left text-xs transition-all group shadow-xs"
+                    >
+                      {qp.icon}
+                      <span className="text-[11px] font-medium text-[hsl(var(--subtext1))] group-hover:text-white truncate">
+                        {qp.label}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
+            ) : (
+              chatHistory.map((msg, i) => (
+                <div
+                  key={i}
+                  className={`flex items-start gap-2.5 group ${msg.role === 'user' ? 'ml-auto flex-row-reverse max-w-[85%]' : 'max-w-[92%]'}`}
+                >
+                  <div className={`h-6 w-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-semibold ${
+                    msg.role === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-[hsl(var(--surface0))] border border-[hsl(var(--surface2))] text-purple-400'
+                  }`}>
+                    {msg.role === 'user' ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
+                  </div>
+
+                  <div className="relative">
+                    <div
+                      className={`rounded-xl px-3 py-2 text-xs leading-relaxed shadow-xs ${
+                        msg.role === 'user'
+                          ? 'bg-blue-600 text-white rounded-tr-none'
+                          : 'bg-[hsl(var(--crust))] border border-[hsl(var(--surface1))] text-[hsl(var(--text))] rounded-tl-none'
+                      }`}
+                      dangerouslySetInnerHTML={{ __html: parseMarkdown(msg.content) }}
+                    />
+                    
+                    {msg.role === 'assistant' && (
+                      <button
+                        onClick={() => copyMessage(msg.content, i)}
+                        aria-label="Copy AI response"
+                        className="opacity-0 group-hover:opacity-100 absolute -bottom-4 right-1 p-1 rounded text-[10px] text-[hsl(var(--overlay1))] hover:text-white bg-[hsl(var(--mantle))] border border-[hsl(var(--surface1))] transition-all flex items-center gap-1"
+                      >
+                        {copiedIndex === i ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        <span>Copy</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
             )}
-            
-            {chatHistory.map((msg, i) => (
-              <div key={i} className={`flex items-start gap-3.5 max-w-2xl ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : ''}`}>
-                <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-[hsl(var(--surface1))]' : 'bg-[hsl(var(--blue)/0.2)] text-[hsl(var(--blue))]'}`}>
-                  {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
-                </div>
-                <div className={`rounded-2xl p-3 shadow-sm text-sm leading-relaxed overflow-hidden ${msg.role === 'user' ? 'bg-[hsl(var(--blue))] text-white rounded-tr-none' : 'bg-[hsl(var(--surface0))] text-editor-text rounded-tl-none'}`}
-                     dangerouslySetInnerHTML={{ __html: parseMarkdown(msg.content) }} />
-              </div>
-            ))}
-            
+
             {isGenerating && (
-              <div className="flex items-start gap-3.5 max-w-2xl animate-pulse">
-                <div className="h-8 w-8 rounded-lg bg-[hsl(var(--blue)/0.2)] text-[hsl(var(--blue))] flex items-center justify-center shrink-0">
-                  <Bot size={16} />
+              <div className="flex items-start gap-2.5 max-w-[80%] animate-fade-in">
+                <div className="h-6 w-6 rounded-md bg-[hsl(var(--surface0))] border border-[hsl(var(--surface2))] flex items-center justify-center flex-shrink-0 text-purple-400">
+                  <Bot className="w-3.5 h-3.5" />
                 </div>
-                <div className="bg-[hsl(var(--surface0))] rounded-2xl rounded-tl-none p-3 flex gap-1.5 items-center">
-                  <div className="h-1.5 w-1.5 bg-editor-text-muted rounded-full animate-bounce"></div>
-                  <div className="h-1.5 w-1.5 bg-editor-text-muted rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="h-1.5 w-1.5 bg-editor-text-muted rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                <div className="bg-[hsl(var(--crust))] border border-[hsl(var(--surface1))] rounded-xl rounded-tl-none px-3 py-2.5 flex items-center gap-1.5 shadow-xs">
+                  <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse delay-150" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse delay-300" />
                 </div>
               </div>
             )}
           </div>
 
-          <div className="p-3 border-t border-editor-border bg-[hsl(var(--mantle))]">
-            <form onSubmit={handleFormSubmit} className="relative flex items-center bg-[hsl(var(--crust))] border border-editor-border rounded-xl focus-within:border-[hsl(var(--blue))] transition-colors">
+          {/* Input Bar */}
+          <div className="p-2.5 border-t border-[hsl(var(--surface1))] bg-[hsl(var(--crust))] flex-shrink-0">
+            <form onSubmit={handleFormSubmit} className="relative flex items-center bg-[hsl(var(--mantle))] border border-[hsl(var(--surface1))] rounded-xl focus-within:border-blue-500/60 focus-within:ring-1 focus-within:ring-blue-500/20 transition-all">
               <textarea
                 ref={textareaRef}
                 value={userInput}
                 onChange={e => { setUserInput(e.target.value); autoResizeTextarea(); }}
                 onKeyDown={handleKeydown}
-                placeholder="Ask me anything..."
-                className="w-full bg-transparent pl-3 pr-10 py-3 text-xs resize-none focus:outline-none max-h-32 overflow-y-auto"
-                style={{ height: '46px' }}
+                placeholder="Ask AI anything about your code..."
+                className="w-full bg-transparent pl-3 pr-10 py-2.5 text-xs text-[hsl(var(--text))] placeholder:text-[hsl(var(--overlay0))] resize-none focus:outline-none max-h-32 min-h-[42px] leading-relaxed font-sans"
+                style={{ height: '42px' }}
               />
-              <button type="submit" disabled={isGenerating || !userInput.trim()} className="absolute right-2 bottom-2 h-7 w-7 rounded-lg bg-[hsl(var(--blue))] text-white flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
-                {isGenerating ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+              <button
+                type="submit"
+                disabled={isGenerating || !userInput.trim()}
+                className="absolute right-2 bottom-2 h-7 w-7 rounded-lg bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-xs"
+                title="Send Message (Enter)"
+              >
+                {isGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
               </button>
             </form>
           </div>
@@ -272,27 +369,54 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
 
         {/* Settings Drawer */}
         {showSettings && (
-          <div className="absolute inset-y-0 right-0 w-64 bg-[hsl(var(--mantle))] border-l border-editor-border p-4 flex flex-col gap-4 z-10 overflow-y-auto shadow-xl">
-            <div className="flex items-center justify-between border-b border-editor-border pb-2">
-              <h3 className="font-semibold text-sm flex items-center gap-2"><Settings size={14} /> Settings</h3>
-              <button onClick={() => setShowSettings(false)} className="text-editor-text-muted hover:text-editor-text"><X size={16} /></button>
-            </div>
-            
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-semibold uppercase text-editor-text-muted">AI Persona</label>
-              <select value={selectedPersona} onChange={e => setSelectedPersona(e.target.value as any)} className="w-full bg-[hsl(var(--crust))] border border-editor-border rounded px-2 py-1.5 text-xs focus:outline-none">
-                <option value="helpful">Helpful Assistant</option>
-                <option value="creative">Creative Storyteller</option>
-                <option value="tech">Coding Companion</option>
-                <option value="sarcastic">Sarcastic Buddy</option>
-                <option value="academic">Academic Researcher</option>
-              </select>
-              <p className="text-[10px] text-editor-text-muted mt-1 italic">{personas[selectedPersona].desc}</p>
+          <div className="absolute inset-y-0 right-0 w-72 bg-[hsl(var(--crust))] border-l border-[hsl(var(--surface1))] p-4 flex flex-col gap-4 z-20 overflow-y-auto shadow-2xl animate-slide-left">
+            <div className="flex items-center justify-between border-b border-[hsl(var(--surface1))] pb-2.5">
+              <h3 className="font-semibold text-xs flex items-center gap-2 text-[hsl(var(--text))]">
+                <Settings2 className="w-3.5 h-3.5" /> AI Engine Settings
+              </h3>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="text-[hsl(var(--overlay1))] hover:text-white p-1 rounded-md transition-colors"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-semibold uppercase text-editor-text-muted">Groq API Key (Optional)</label>
-              <input type="password" value={apiKey} onChange={e => { setApiKey(e.target.value); localStorage.setItem('groq_api_key', e.target.value); }} placeholder="Using Default" className="w-full bg-[hsl(var(--crust))] border border-editor-border rounded px-2 py-1.5 text-xs focus:outline-none" />
+              <label className="text-[10px] font-semibold uppercase text-[hsl(var(--overlay0))] tracking-wider">
+                Persona Preset
+              </label>
+              <select
+                value={selectedPersona}
+                onChange={e => setSelectedPersona(e.target.value as any)}
+                className="w-full bg-[hsl(var(--mantle))] border border-[hsl(var(--surface1))] rounded-lg px-2.5 py-1.5 text-xs text-[hsl(var(--text))] focus:outline-none focus:border-blue-500"
+              >
+                {Object.entries(personas).map(([key, val]) => (
+                  <option key={key} value={key}>{val.name}</option>
+                ))}
+              </select>
+              <p className="text-[10px] text-[hsl(var(--overlay1))] mt-1 leading-relaxed">
+                {personas[selectedPersona].desc}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-semibold uppercase text-[hsl(var(--overlay0))] tracking-wider">
+                Custom Groq API Key
+              </label>
+              <input
+                type="password"
+                value={apiKey}
+                onChange={e => {
+                  setApiKey(e.target.value);
+                  localStorage.setItem('groq_api_key', e.target.value);
+                }}
+                placeholder="Optional personal Groq key"
+                className="w-full bg-[hsl(var(--mantle))] border border-[hsl(var(--surface1))] rounded-lg px-2.5 py-1.5 text-xs text-[hsl(var(--text))] placeholder:text-[hsl(var(--overlay0))] focus:outline-none focus:border-blue-500"
+              />
+              <span className="text-[9px] text-[hsl(var(--overlay0))]">
+                Leave blank to use the built-in system key.
+              </span>
             </div>
           </div>
         )}
@@ -300,3 +424,5 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
     </div>
   );
 });
+
+AIAssistant.displayName = 'AIAssistant';
