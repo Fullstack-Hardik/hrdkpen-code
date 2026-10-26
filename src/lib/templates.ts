@@ -67,6 +67,139 @@ document.querySelector('h1').addEventListener('click', () => {
 `),
   ],
 
+  react: (): FileNode[] => [
+    createNode('package.json', 'file', `{
+  "name": "react-vite-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.2"
+  }
+}`),
+    createNode('index.html', 'file', `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React + Vite</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>`),
+    createNode('vite.config.js', 'file', `import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 5173,
+    host: true
+  }
+})`),
+    createNode('src', 'folder', undefined, [
+      createNode('main.jsx', 'file', `import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)`),
+      createNode('App.jsx', 'file', `import { useState } from 'react'
+import './App.css'
+
+export default function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <div className="container">
+      <h1>React + Vite</h1>
+      <p className="subtitle">HRDK Pen WebContainer Development Environment</p>
+      <div className="card">
+        <button onClick={() => setCount((c) => c + 1)}>
+          Count is {count}
+        </button>
+        <p>Edit <code>src/App.jsx</code> and save to test HMR</p>
+      </div>
+    </div>
+  )
+}`),
+      createNode('App.css', 'file', `.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #11111b;
+  color: #cdd6f4;
+  text-align: center;
+}
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #89b4fa, #b4befe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.subtitle {
+  color: #a6adc8;
+  margin-bottom: 2rem;
+}
+.card {
+  padding: 2rem;
+  background: #1e1e2e;
+  border-radius: 12px;
+  border: 1px solid #313244;
+}
+button {
+  background: #89b4fa;
+  color: #11111b;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+}
+button:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+button:active {
+  transform: scale(0.98);
+}
+code {
+  background: #313244;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}`),
+      createNode('index.css', 'file', `* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}`),
+    ]),
+  ],
+
   node: (): FileNode[] => [
     createNode('package.json', 'file', `{
   "name": "node-project",
@@ -223,82 +356,6 @@ app.listen(port, () => {
     ]),
   ],
 
-  react: (): FileNode[] => [
-    createNode('package.json', 'file', `{
-  "name": "react-vite-project",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.0.3",
-    "vite": "^4.4.5"
-  }
-}`),
-    createNode('vite.config.js', 'file', `import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-})`),
-    createNode('index.html', 'file', `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>`),
-    createNode('src', 'folder', undefined, [
-      createNode('main.jsx', 'file', `import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
-`),
-      createNode('App.jsx', 'file', `import { useState } from 'react'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <div className="card">
-      <h1>Vite + React</h1>
-      <button onClick={() => setCount((count) => count + 1)}>
-        count is {count}
-      </button>
-      <p>
-        Edit <code>src/App.jsx</code> and save to test HMR
-      </p>
-    </div>
-  )
-}
-
-export default App
-`),
-      createNode('index.css', 'file', `body { font-family: system-ui, sans-serif; background: #1a1b26; color: #a9b1d6; }`),
-      createNode('App.css', 'file', `.card { padding: 2em; text-align: center; } button { padding: 10px 20px; font-size: 1.2rem; cursor: pointer; }`),
-    ]),
-  ],
 
   python: (): FileNode[] => [
     createNode('main.py', 'file', `def main():

@@ -114,46 +114,12 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(({ onClose, ma
           })
         );
 
-        // Pipe from Xterm directly to WebContainer shellProcess
+        // Pipe directly from Xterm to WebContainer shellProcess without any command tampering
         const input = shellProcess.input.getWriter();
         writerRef.current = input;
         
-        let commandBuffer = '';
         term.onData((data) => {
-          if (data === '\r' || data === '\n') {
-            const raw = commandBuffer.trim();
-            // If user typed create-vite without pinning to 5.x, transparently rewrite to 5.4.1
-            // to avoid Vite 6's broken @rolldown/binding-wasm32-wasi native WASI crash in browser WebContainer
-            if (
-              (raw.includes('npm create vite') || raw.includes('npm init vite') || raw.includes('npx create-vite')) &&
-              !raw.includes('@5.')
-            ) {
-              // Erase current command buffer in jsh using backspaces
-              for (let i = 0; i < commandBuffer.length; i++) {
-                input.write('\b \b');
-              }
-              const safeCommand = raw
-                .replace(/npm create vite(@latest)?/g, 'npx -y create-vite@5.4.1')
-                .replace(/npm init vite(@latest)?/g, 'npx -y create-vite@5.4.1')
-                .replace(/npx create-vite(@latest)?/g, 'npx -y create-vite@5.4.1');
-              
-              commandBuffer = '';
-              input.write(safeCommand + '\r');
-              return;
-            }
-            commandBuffer = '';
-            input.write(data);
-          } else if (data === '\x7f' || data === '\b') {
-            commandBuffer = commandBuffer.slice(0, -1);
-            input.write(data);
-          } else if (data === '\x03') { // Ctrl+C
-            commandBuffer = '';
-            input.write(data);
-          } else {
-            // Regular typing
-            commandBuffer += data;
-            input.write(data);
-          }
+          input.write(data);
         });
 
         term.onResize((size) => {
@@ -238,18 +204,7 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(({ onClose, ma
           return;
         }
 
-        let runCmd = cmd;
-        if (
-          (runCmd.includes('npm create vite') || runCmd.includes('npm init vite') || runCmd.includes('npx create-vite')) &&
-          !runCmd.includes('@5.')
-        ) {
-          runCmd = runCmd
-            .replace(/npm create vite(@latest)?/g, 'npx -y create-vite@5.4.1')
-            .replace(/npm init vite(@latest)?/g, 'npx -y create-vite@5.4.1')
-            .replace(/npx create-vite(@latest)?/g, 'npx -y create-vite@5.4.1');
-        }
-
-        writer.write(runCmd + '\r');
+        writer.write(cmd + '\r');
       }
     },
     clear: () => {
