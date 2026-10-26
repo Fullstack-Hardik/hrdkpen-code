@@ -857,6 +857,70 @@
 }
 .animate-progress { animation: progress-pulse 1.5s ease infinite; }
 
+/* Deliberate IDE surface: quiet structure over decorative application chrome. */
+:root, .theme-smart-dark {
+  --activity-bar-bg: var(--crust);
+  --tx-fast: 140ms ease;
+  --tx-smooth: 180ms ease;
+  --shadow-glow-blue: none;
+  --shadow-glow-green: none;
+  --shadow-lg: 0 18px 40px rgba(0, 0, 0, .28);
+}
+
+.ide-header {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 12px;
+  background: hsl(var(--crust));
+  border-bottom: 1px solid hsl(var(--surface1));
+  user-select: none;
+}
+
+.workspace-switcher {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 220px;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px;
+  border-radius: 5px;
+  color: hsl(var(--text));
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.workspace-switcher:hover { background: hsl(var(--surface0)); }
+.workspace-dot { width: 6px; height: 6px; flex: 0 0 auto; border-radius: 999px; background: hsl(var(--green)); }
+.ide-button, .ide-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  border: 1px solid hsl(var(--surface1));
+  border-radius: 5px;
+  color: hsl(var(--subtext0));
+  background: hsl(var(--mantle));
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+.ide-button { padding: 0 9px; }
+.ide-icon-button { width: 28px; }
+.ide-button:hover, .ide-icon-button:hover { color: hsl(var(--text)); background: hsl(var(--surface0)); border-color: hsl(var(--surface2)); }
+.ide-icon-button.is-active { color: hsl(var(--blue)); background: hsl(var(--blue) / .12); border-color: hsl(var(--blue) / .35); }
+.ide-button-primary { background: hsl(var(--blue)); border-color: hsl(var(--blue)); color: #07111e; }
+.ide-button-primary:hover { background: hsl(var(--blue) / .88); border-color: hsl(var(--blue)); color: #07111e; }
+
+/* Avoid the overly polished, card-heavy generated look in the working IDE. */
+.glass, .glass-panel, .apple-vibrant { backdrop-filter: none; -webkit-backdrop-filter: none; }
+.mac-traffic-light { display: none; }
+button:focus-visible, input:focus-visible { outline: 2px solid hsl(var(--blue)); outline-offset: 2px; }
+
 /* ─── Staggered card animations ─── */
 .stagger-1 { animation-delay: 0.05s; }
 .stagger-2 { animation-delay: 0.10s; }

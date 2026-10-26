@@ -130,13 +130,14 @@ export default function App() {
 
   return (
     <div className="container">
-      <h1>React + Vite</h1>
-      <p className="subtitle">HRDK Pen WebContainer Development Environment</p>
+      <p className="eyebrow">React + Vite</p>
+      <h1>Start building.</h1>
+      <p className="subtitle">Edit <code>src/App.jsx</code>; the preview updates as you work.</p>
       <div className="card">
         <button onClick={() => setCount((c) => c + 1)}>
           Count is {count}
         </button>
-        <p>Edit <code>src/App.jsx</code> and save to test HMR</p>
+        <p>Count state is live and ready to change.</p>
       </div>
     </div>
   )
@@ -148,47 +149,46 @@ export default function App() {
   justify-content: center;
   min-height: 100vh;
   font-family: system-ui, -apple-system, sans-serif;
-  background: #11111b;
-  color: #cdd6f4;
-  text-align: center;
+  background: #0b1020;
+  color: #e5e7eb;
+  text-align: left;
+  padding: 2rem;
 }
 h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #89b4fa, #b4befe);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: clamp(2.25rem, 6vw, 4.5rem);
+  max-width: 12ch;
+  line-height: 1;
+  margin: 0 0 1rem;
 }
+.eyebrow { color: #93c5fd; font-size: .85rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .subtitle {
-  color: #a6adc8;
-  margin-bottom: 2rem;
+  color: #aab4c8;
+  max-width: 46ch;
+  margin-bottom: 1.5rem;
 }
 .card {
-  padding: 2rem;
-  background: #1e1e2e;
-  border-radius: 12px;
-  border: 1px solid #313244;
+  width: min(100%, 34rem);
+  padding: 1.25rem;
+  background: #121a2c;
+  border-radius: 8px;
+  border: 1px solid #26324b;
 }
 button {
-  background: #89b4fa;
-  color: #11111b;
+  background: #60a5fa;
+  color: #09111f;
   border: none;
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: transform 0.1s, opacity 0.2s;
+  transition: background 0.15s ease;
 }
 button:hover {
-  opacity: 0.9;
-  transform: scale(1.02);
-}
-button:active {
-  transform: scale(0.98);
+  background: #93c5fd;
 }
 code {
-  background: #313244;
+  background: #202b40;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
 }`),

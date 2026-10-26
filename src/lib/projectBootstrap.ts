@@ -47,6 +47,10 @@ class ProjectBootstrapService {
   private listeners: Set<StatusListener> = new Set();
   private activeBootstraps: Map<string, AbortController> = new Map();
   private staticServerProjects: Set<string> = new Set();
+  // WebContainer has one shared virtual filesystem. Serialising mounts and package
+  // operations prevents a project switch from overwriting an in-flight install.
+  private runtimeQueue: Promise<void> = Promise.resolve();
+  private activeRuntimeController?: AbortController;
 
   constructor() {
     processManager.setOnServerReady((projectId, url, port) => {
@@ -172,13 +176,26 @@ class ProjectBootstrapService {
       onOutput?: (type: 'log' | 'error' | 'system', text: string) => void;
     } = {}
   ): Promise<BootstrapStatus> {
-    // Cancel any previous bootstrap in flight for this project
+    // Register cancellation before waiting for the shared runtime. Otherwise a
+    // quick second request can leave a stale job queued behind an install.
+    this.activeRuntimeController?.abort();
     const prevController = this.activeBootstraps.get(projectId);
-    if (prevController) {
-      prevController.abort();
-    }
+    if (prevController) prevController.abort();
     const abortController = new AbortController();
     this.activeBootstraps.set(projectId, abortController);
+    this.activeRuntimeController = abortController;
+
+    let releaseRuntime!: () => void;
+    const previous = this.runtimeQueue;
+    this.runtimeQueue = new Promise<void>((resolve) => { releaseRuntime = resolve; });
+    await previous;
+
+    if (abortController.signal.aborted) {
+      releaseRuntime();
+      return this.getStatus(projectId) ?? {
+        projectId, state: 'stopped', message: 'Project startup cancelled', framework: 'static', hasPackageJson: false,
+      };
+    }
 
     const log = (type: 'log' | 'error' | 'system', msg: string) => {
       options.onOutput?.(type, msg);
@@ -194,7 +211,9 @@ class ProjectBootstrapService {
       const wc = await getWebContainer();
       if (abortController.signal.aborted) return this.getStatus(projectId)!;
 
-      // 1. Clean previous processes for this project
+      // 1. The browser runtime is single-workspace: stop servers from another
+      // project before replacing the virtual filesystem and port namespace.
+      await processManager.killAllExcept(projectId);
       await processManager.killAll(projectId);
 
       // 2. Mount filesystem
@@ -281,27 +300,25 @@ server.listen(3000, () => {
           state: 'installing',
           message: 'Installing project dependencies with npm...',
         });
-        log('system', '▶ Running npm install --no-audit --no-fund --legacy-peer-deps...');
+        const hasLockfile = files.some(file => file.type === 'file' && file.name === 'package-lock.json');
+        const installArgs = hasLockfile
+          ? ['ci', '--prefer-offline', '--no-audit', '--no-fund', '--include=optional']
+          : ['install', '--prefer-offline', '--no-audit', '--no-fund', '--include=optional'];
+        log('system', `▶ Running npm ${installArgs.join(' ')}...`);
 
         // Pause filesystem sync polling so npm extraction does not trigger thrashing
         fsSyncService.pauseSync();
         let exitCode = 1;
         try {
-          const installProc = await processManager.spawn(projectId, 'npm', [
-            'install',
-            '--prefer-offline',
-            '--no-audit',
-            '--no-fund',
-            '--legacy-peer-deps',
-          ]);
+          const installProc = await processManager.spawn(projectId, 'npm', installArgs);
           exitCode = await installProc.exit;
         } finally {
           fsSyncService.resumeSync();
         }
 
         if (exitCode !== 0) {
-          const err = `npm install failed with exit code ${exitCode}`;
-          log('error', `❌ ${err}. Check terminal output for missing dependencies.`);
+          const err = `npm ${hasLockfile ? 'ci' : 'install'} failed with exit code ${exitCode}`;
+          log('error', `❌ ${err}. The workspace was not reset. Review the terminal output, then run npm install after correcting package.json or the lockfile.`);
           this.updateStatus(projectId, {
             state: 'error',
             message: err,
@@ -371,6 +388,8 @@ server.listen(3000, () => {
       return this.getStatus(projectId)!;
     } finally {
       this.activeBootstraps.delete(projectId);
+      if (this.activeRuntimeController === abortController) this.activeRuntimeController = undefined;
+      releaseRuntime();
     }
   }
 

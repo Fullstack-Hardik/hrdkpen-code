@@ -164,6 +164,12 @@ class ProcessManager {
     }
     this.notify();
   }
+
+  /** The browser runtime has one filesystem and one exposed port namespace. */
+  async killAllExcept(projectId: string) {
+    const projectIds = new Set(this.getAll().filter((process) => process.projectId !== projectId).map((process) => process.projectId));
+    for (const id of projectIds) await this.killAll(id);
+  }
 }
 
 export const processManager = new ProcessManager();

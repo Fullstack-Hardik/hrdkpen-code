@@ -80,24 +80,8 @@ function buildDocument(
     }
   });
 
-  // Bypass COEP block for images
-  const fixImg = (img) => {
-    if (img.src && !img.src.startsWith('data:') && !img.src.includes('corsproxy.io') && !img.src.startsWith('blob:')) {
-      img.crossOrigin = 'anonymous';
-      img.src = 'https://corsproxy.io/?url=' + encodeURIComponent(img.src);
-    }
-  };
-  const observer = new MutationObserver(mutations => {
-    mutations.forEach(m => {
-      if (m.attributeName === 'src') fixImg(m.target);
-      m.addedNodes.forEach(node => {
-        if (node.tagName === 'IMG') fixImg(node);
-        else if (node.querySelectorAll) node.querySelectorAll('img').forEach(fixImg);
-      });
-    });
-  });
-  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
-  window.addEventListener('DOMContentLoaded', () => document.querySelectorAll('img').forEach(fixImg));
+  // Remote images retain their original URL. Routing user content through a
+  // third-party proxy both leaks URLs and changes the project's behaviour.
 })();
 <\/script>`;
 
