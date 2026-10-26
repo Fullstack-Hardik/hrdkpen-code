@@ -114,11 +114,42 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(({ onClose, ma
           })
         );
 
-        // Pipe from Xterm to WebContainer
+        // Pipe from Xterm to WebContainer with interactive command interception
         const input = shellProcess.input.getWriter();
         writerRef.current = input;
+        
+        let lineBuffer = '';
         term.onData((data) => {
-          input.write(data);
+          // Track typed characters until Enter (\r or \n)
+          if (data === '\r' || data === '\n') {
+            const trimmed = lineBuffer.trim();
+            // If user typed `npm create vite` or `npx create-vite` directly in the interactive terminal
+            if ((trimmed.startsWith('npm create vite') || trimmed.startsWith('npm init vite') || trimmed.startsWith('npx create-vite')) && !trimmed.includes('@5.')) {
+              // Clear current command in shell with Ctrl+U
+              input.write('\x15');
+              const safeCmd = trimmed
+                .replace(/npm create vite(@latest)?/g, 'npx -y create-vite@5.4.1')
+                .replace(/npm init vite(@latest)?/g, 'npx -y create-vite@5.4.1')
+                .replace(/npx create-vite(@latest)?/g, 'npx -y create-vite@5.4.1');
+              term.writeln(`\r\n\x1b[33m[HRDK Pen] Re-routing to create-vite@5.4.1 for WebContainer compatibility...\x1b[0m`);
+              input.write(safeCmd + '\r');
+              lineBuffer = '';
+              return;
+            }
+            lineBuffer = '';
+            input.write(data);
+          } else if (data === '\x7f' || data === '\b') {
+            // Backspace
+            lineBuffer = lineBuffer.slice(0, -1);
+            input.write(data);
+          } else if (data === '\x03' || data === '\x15') {
+            // Ctrl+C or Ctrl+U
+            lineBuffer = '';
+            input.write(data);
+          } else {
+            lineBuffer += data;
+            input.write(data);
+          }
         });
 
         term.onResize((size) => {
