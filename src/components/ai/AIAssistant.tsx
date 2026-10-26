@@ -3,6 +3,7 @@ import {
   Bot, Trash2, Settings2, X, Send, Copy, Check, User, Loader2, Sparkles, Code2, Lightbulb, Zap, Terminal
 } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { requestGrok, testGrokConnection, type GrokMessage } from '@/lib/grok';
 
 export interface AIAssistantRef {
   submitPrompt: (prompt: string) => void;
@@ -86,6 +87,9 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [selectedPersona, setSelectedPersona] = useState<keyof typeof personas>('tech');
   const [apiKey, setApiKey] = useState('');
+  const [model, setModel] = useState('grok-4.6');
+  const [connectionState, setConnectionState] = useState<'idle' | 'testing' | 'ready' | 'error'>('idle');
+  const [connectionMessage, setConnectionMessage] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [userInput, setUserInput] = useState('');
   const [showSettings, setShowSettings] = useState(false);
@@ -94,12 +98,7 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    const savedHistory = localStorage.getItem('chatHistory');
-    if (savedHistory) {
-      try { setChatHistory(JSON.parse(savedHistory)); } catch (e) {}
-    }
-    const savedApiKey = localStorage.getItem('groq_api_key');
-    if (savedApiKey) setApiKey(savedApiKey);
+    // Deliberately no key restoration: credentials remain in memory for this tab only.
   }, []);
 
   useEffect(() => {
@@ -159,13 +158,12 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
       const responseText = await callGroqAPI(newHistory, personas[selectedPersona].system);
       const updatedHistory = [...newHistory, { role: 'assistant' as const, content: responseText }];
       setChatHistory(updatedHistory);
-      localStorage.setItem('chatHistory', JSON.stringify(updatedHistory));
     } catch (err) {
       setChatHistory(prev => [
         ...prev,
         {
           role: 'assistant',
-          content: 'I am ready to help you with your project! You can either add a free **Groq API key** in Settings (gear icon), or ask any coding/architectural question directly.'
+          content: `**Grok request failed.** ${err instanceof Error ? err.message : 'Please try again.'}`
         }
       ]);
     } finally {
@@ -175,32 +173,10 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
   };
 
   const callGroqAPI = async (history: Message[], systemPrompt?: string) => {
-    const key = apiKey.trim() || import.meta.env.VITE_GROQ_API_KEY || '';
-    if (!key) throw new Error("No API key configured");
-
-    const apiUrl = `https://api.groq.com/openai/v1/chat/completions`;
-    const messages = systemPrompt 
+    const messages: GrokMessage[] = systemPrompt 
       ? [{ role: 'system', content: systemPrompt }, ...history] 
       : history;
-
-    const payload = {
-      model: "llama-3.3-70b-versatile",
-      messages,
-      temperature: 0.7,
-    };
-
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${key}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) throw new Error("HTTP Error: " + response.statusText);
-    const result = await response.json();
-    return result.choices?.[0]?.message?.content || '';
+    return requestGrok(apiKey, model, messages);
   };
 
   const copyMessage = (content: string, index: number) => {
@@ -402,20 +378,44 @@ export const AIAssistant = forwardRef<AIAssistantRef, {}>((props, ref) => {
 
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-semibold uppercase text-[hsl(var(--overlay0))] tracking-wider">
-                Custom Groq API Key
+                Grok API Key
               </label>
               <input
                 type="password"
                 value={apiKey}
-                onChange={e => {
-                  setApiKey(e.target.value);
-                  localStorage.setItem('groq_api_key', e.target.value);
-                }}
-                placeholder="Optional personal Groq key"
+                onChange={e => { setApiKey(e.target.value); setConnectionState('idle'); setConnectionMessage(''); }}
+                placeholder="xai-…"
                 className="w-full bg-[hsl(var(--mantle))] border border-[hsl(var(--surface1))] rounded-lg px-2.5 py-1.5 text-xs text-[hsl(var(--text))] placeholder:text-[hsl(var(--overlay0))] focus:outline-none focus:border-blue-500"
               />
-              <span className="text-[9px] text-[hsl(var(--overlay0))]">
-                Leave blank to use the built-in system key.
+              <select
+                value={model}
+                onChange={e => setModel(e.target.value)}
+                className="w-full bg-[hsl(var(--mantle))] border border-[hsl(var(--surface1))] rounded-lg px-2.5 py-1.5 text-xs text-[hsl(var(--text))]"
+              >
+                <option value="grok-4.6">Grok 4.6</option>
+                <option value="grok-4.7">Grok 4.7</option>
+              </select>
+              <button
+                type="button"
+                disabled={!apiKey.trim() || connectionState === 'testing'}
+                onClick={async () => {
+                  setConnectionState('testing');
+                  setConnectionMessage('Testing connection…');
+                  try {
+                    await testGrokConnection(apiKey, model);
+                    setConnectionState('ready');
+                    setConnectionMessage('Connected. Your key is held only for this browser tab.');
+                  } catch (error) {
+                    setConnectionState('error');
+                    setConnectionMessage(error instanceof Error ? error.message : 'Connection test failed.');
+                  }
+                }}
+                className="self-start rounded-md border border-[hsl(var(--surface2))] px-2.5 py-1.5 text-[11px] font-medium text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] disabled:opacity-50"
+              >
+                {connectionState === 'testing' ? 'Testing…' : 'Test connection'}
+              </button>
+              <span className={`text-[9px] leading-relaxed ${connectionState === 'error' ? 'text-rose-400' : connectionState === 'ready' ? 'text-emerald-400' : 'text-[hsl(var(--overlay0))]'}`}>
+                {connectionMessage || 'The key is sent directly to xAI over HTTPS for this tab only; it is never saved in browser storage.'}
               </span>
             </div>
           </div>

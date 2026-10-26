@@ -30,7 +30,7 @@ import { PersonalCanvas } from '@/components/panels/PersonalCanvas';
 import { AssetLibrary } from '@/components/assets/AssetLibrary';
 import { CommandPalette } from '@/components/layout/CommandPalette';
 import { BootstrapScreen } from '@/components/layout/BootstrapScreen';
-import { DoctorKitBadge } from '@/components/layout/DoctorKitBadge';
+
 import { useWorkspace } from '@/hooks/use-workspace';
 import { useSettings } from '@/hooks/use-settings';
 import { useDoctorKit } from '@/hooks/useDoctorKit';
