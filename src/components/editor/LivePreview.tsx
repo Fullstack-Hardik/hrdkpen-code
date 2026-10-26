@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   RefreshCw, ExternalLink, Download, Monitor,
-  Smartphone, Tablet, Laptop, Bug, Globe, Lock, ShieldCheck, ArrowRight
+  Smartphone, Tablet, Laptop, Bug, Globe, Lock, ShieldCheck, ArrowRight, Sun, Moon
 } from 'lucide-react';
 
 interface LivePreviewProps {
@@ -17,11 +17,27 @@ interface LivePreviewProps {
   serverReadyCount?: number;
   inspectEnabled?: boolean;
   onInspectChange?: (enabled: boolean) => void;
+  theme?: string;
+  fontFamily?: string;
+  fontSize?: number;
 }
 
-function buildDocument(html: string, css: string, js: string, injectEruda = false): string {
-  const erudaScript = injectEruda ? `<script src="https://cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init({defaults:{displaySize:100,transparency:1,theme:'Dark'}}); eruda.show(); eruda._entryBtn.hide();</script>` : '';
+function buildDocument(
+  html: string,
+  css: string,
+  js: string,
+  injectEruda = false,
+  previewTheme: 'dark' | 'light' = 'dark',
+  fontFamily = 'Inter, system-ui, sans-serif',
+  fontSize = 14
+): string {
+  const erudaScript = injectEruda ? `<script src="https://cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init({defaults:{displaySize:100,transparency:1,theme:'${previewTheme === 'dark' ? 'Dark' : 'Light'}'}}); eruda.show(); eruda._entryBtn.hide();</script>` : '';
   
+  // Theme colors matching the IDE
+  const isDark = previewTheme === 'dark';
+  const bgColor = isDark ? '#121218' : '#ffffff';
+  const textColor = isDark ? '#e4e4e7' : '#18181b';
+
   // Inject console capture + postMessage bridge into preview
   const bridge = `
 <script>
@@ -80,16 +96,25 @@ function buildDocument(html: string, css: string, js: string, injectEruda = fals
 })();
 <\/script>`;
 
-  // If user wrote full HTML document, inject bridge + CSS
+  const defaultThemeStyle = `
+    html, body {
+      font-family: ${fontFamily};
+      font-size: ${fontSize}px;
+      color: ${textColor};
+      background-color: ${bgColor};
+    }
+  `;
+
+  // If user wrote full HTML document, inject bridge + CSS + theme overrides
   if (/<!doctype\s+html/i.test(html)) {
     return html
-      .replace(/<head([^>]*)>/i, `<head$1><style>${css}</style>${bridge}${erudaScript}`)
+      .replace(/<head([^>]*)>/i, `<head$1><style>${defaultThemeStyle}\n${css}</style>${bridge}${erudaScript}`)
       .replace(/<\/body>/i, `<script>\ntry { ${js} } catch(e) { console.error(e.message); }\n<\/script></body>`);
   }
 
   // Otherwise compose a document
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="${previewTheme}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -98,7 +123,8 @@ function buildDocument(html: string, css: string, js: string, injectEruda = fals
   ${erudaScript}
   <style>
     *, *::before, *::after { box-sizing: border-box; }
-    body { margin: 0; padding: 16px; font-family: system-ui, sans-serif; color: #1a1a1a; background: #fff; }
+    body { margin: 0; padding: 16px; min-height: 100vh; }
+    ${defaultThemeStyle}
     ${css}
   </style>
 </head>
@@ -130,12 +156,29 @@ export const LivePreview = ({
   serverReadyCount,
   inspectEnabled,
   onInspectChange,
+  theme,
+  fontFamily,
+  fontSize,
 }: LivePreviewProps) => {
   const [device, setDevice]       = useState<DeviceMode>('desktop');
   const [refreshKey, setRefreshKey] = useState(0);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [internalInspect, setInternalInspect] = useState(false);
   const [currentUrl, setCurrentUrl] = useState(serverUrl || '');
+
+  // Live preview theme state: default to dark or sync with IDE theme
+  const initialIsDark = !theme || !theme.includes('light');
+  const [previewThemeMode, setPreviewThemeMode] = useState<'dark' | 'light'>(initialIsDark ? 'dark' : 'light');
+
+  // Keep in sync when the IDE settings theme changes
+  useEffect(() => {
+    if (theme) {
+      setPreviewThemeMode(theme.includes('light') ? 'light' : 'dark');
+    }
+  }, [theme]);
+
+  const effectiveFontFamily = fontFamily || '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Plus Jakarta Sans", "Inter", system-ui, sans-serif';
+  const effectiveFontSize = fontSize || 14;
 
   const isInspect = inspectEnabled ?? internalInspect;
   const toggleInspect = () => {
@@ -271,6 +314,18 @@ export const LivePreview = ({
             ))}
           </div>
 
+          {/* Preview Theme Toggle (Dark / Light) */}
+          <button
+            onClick={() => {
+              setPreviewThemeMode(prev => prev === 'dark' ? 'light' : 'dark');
+              setRefreshKey(k => k + 1);
+            }}
+            title={`Preview Theme: ${previewThemeMode === 'dark' ? 'Dark' : 'Light'} (click to toggle)`}
+            className="p-1 rounded-md hover:bg-[hsl(var(--surface0))] transition-all text-[hsl(var(--overlay1))] hover:text-white"
+          >
+            {previewThemeMode === 'dark' ? <Moon className="w-3.5 h-3.5 text-blue-400" /> : <Sun className="w-3.5 h-3.5 text-amber-400" />}
+          </button>
+
           <button
             onClick={toggleInspect}
             title="Toggle Inspect (Eruda DevTools)"
@@ -325,7 +380,9 @@ export const LivePreview = ({
       <div className="flex-1 overflow-auto flex items-start justify-center p-3 bg-[hsl(var(--crust))]">
         {hasContent ? (
           <div
-            className="overflow-hidden rounded border border-editor-border shadow-lg bg-white relative"
+            className={`overflow-hidden rounded-xl border border-editor-border shadow-2xl relative transition-all ${
+              previewThemeMode === 'dark' ? 'bg-[#121218]' : 'bg-white'
+            }`}
             style={{
               width: dim.w,
               height: dim.h === '100%' ? 'calc(100% - 0px)' : dim.h,
@@ -344,8 +401,16 @@ export const LivePreview = ({
               />
             ) : (
               <iframe
-                key={refreshKey}
-                srcDoc={buildDocument(htmlContent, cssContent, jsContent, isInspect)}
+                key={`${refreshKey}-${previewThemeMode}-${effectiveFontFamily}-${effectiveFontSize}`}
+                srcDoc={buildDocument(
+                  htmlContent,
+                  cssContent,
+                  jsContent,
+                  isInspect,
+                  previewThemeMode,
+                  effectiveFontFamily,
+                  effectiveFontSize
+                )}
                 className="w-full h-full border-0"
                 title="Live Preview"
                 sandbox="allow-scripts allow-forms allow-popups allow-modals allow-same-origin"

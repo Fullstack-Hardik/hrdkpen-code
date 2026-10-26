@@ -1,118 +1,91 @@
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { X, Globe, Loader2 } from 'lucide-react';
+import { X, Rocket, Sparkles, Bell, CheckCircle2 } from 'lucide-react';
 
 interface PublishModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onPublish: (details: { name: string; description: string; category: string }) => Promise<void>;
+  onPublish?: (details: { name: string; description: string; category: string }) => Promise<void>;
 }
 
-export const PublishModal = ({ isOpen, onClose, onPublish }: PublishModalProps) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [isPublishing, setIsPublishing] = useState(false);
-
+export const PublishModal = ({ isOpen, onClose }: PublishModalProps) => {
   if (!isOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-
-    setIsPublishing(true);
-    try {
-      await onPublish({ name, description, category });
-      onClose();
-    } finally {
-      setIsPublishing(false);
-    }
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-editor-panel border border-editor-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="flex items-center justify-between p-4 border-b border-editor-border bg-editor-bg">
-          <h2 className="text-lg font-semibold text-editor-text flex items-center gap-2">
-            <Globe className="w-5 h-5 text-lavender-400" />
-            Publish Project
-          </h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fade-in">
+      <div className="bg-[hsl(var(--crust))]/95 border border-[hsl(var(--surface1))] rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-scale-in">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-[hsl(var(--surface1))]/70 bg-[hsl(var(--surface0))]/30">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-blue-500/15 flex items-center justify-center text-blue-400 border border-blue-500/20">
+              <Rocket className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-[hsl(var(--text))]">One-Click Web Publishing</h2>
+              <p className="text-[10px] text-[hsl(var(--overlay1))]">Cloud hosting & live custom domains</p>
+            </div>
+          </div>
           <button
             onClick={onClose}
-            className="text-editor-text-muted hover:text-editor-text transition-colors"
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface0))] transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          <div>
-            <label className="block text-xs font-medium text-editor-text-muted mb-1.5">
-              Project Name *
-            </label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. My Awesome App"
-              required
-              className="bg-editor-bg border-editor-border text-editor-text focus:border-lavender-500"
-              disabled={isPublishing}
-            />
+        {/* Card Body */}
+        <div className="p-6 text-center space-y-5">
+          <div className="relative mx-auto w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600/20 via-indigo-500/20 to-purple-500/20 border border-blue-500/30 flex items-center justify-center shadow-lg shadow-blue-500/10">
+            <Sparkles className="w-8 h-8 text-blue-400 animate-pulse" />
+            <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-blue-500 text-white tracking-wider uppercase shadow-sm">
+              Soon
+            </span>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-editor-text-muted mb-1.5">
-              Description
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="What is your project about?"
-              className="w-full bg-editor-bg border border-editor-border rounded-md px-3 py-2 text-sm text-editor-text focus:outline-none focus:ring-1 focus:ring-lavender-500 focus:border-lavender-500 resize-none h-24"
-              disabled={isPublishing}
-            />
+            <h3 className="text-base font-bold text-[hsl(var(--text))] mb-1.5">
+              Publishing Feature Coming Soon
+            </h3>
+            <p className="text-xs text-[hsl(var(--overlay1))] leading-relaxed max-w-xs mx-auto">
+              We are currently optimizing global edge deployment with SSL certificates, instant live URLs, and custom domain mapping for your projects.
+            </p>
           </div>
 
-          <div>
-            <label className="block text-xs font-medium text-editor-text-muted mb-1.5">
-              Category
-            </label>
-            <Input
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="e.g. Web App, Game, Utility"
-              className="bg-editor-bg border-editor-border text-editor-text focus:border-lavender-500"
-              disabled={isPublishing}
-            />
+          {/* Planned Features List */}
+          <div className="text-left bg-[hsl(var(--surface0))]/40 border border-[hsl(var(--surface1))]/60 rounded-xl p-3.5 space-y-2 text-xs">
+            <div className="flex items-center gap-2 text-[hsl(var(--text))]">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+              <span>Instant Edge CDN hosting with zero setup</span>
+            </div>
+            <div className="flex items-center gap-2 text-[hsl(var(--text))]">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+              <span>Automatic SSL certificates on custom domains</span>
+            </div>
+            <div className="flex items-center gap-2 text-[hsl(var(--text))]">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+              <span>Free `.hrdk.pen` shareable live preview URLs</span>
+            </div>
           </div>
 
-          <div className="pt-2 flex justify-end gap-2">
+          {/* Action buttons */}
+          <div className="pt-2 flex items-center justify-end gap-2.5">
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               onClick={onClose}
-              disabled={isPublishing}
-              className="text-editor-text-muted"
+              className="text-xs border-[hsl(var(--surface1))] bg-[hsl(var(--surface0))]/60 text-[hsl(var(--text))] hover:bg-[hsl(var(--surface1))]"
             >
-              Cancel
+              Got it
             </Button>
             <Button
-              type="submit"
-              disabled={!name.trim() || isPublishing}
-              className="bg-lavender-500 hover:bg-lavender-600 text-white min-w-[100px]"
+              type="button"
+              onClick={onClose}
+              className="text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-sm shadow-blue-600/30 gap-1.5"
             >
-              {isPublishing ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Publishing
-                </>
-              ) : (
-                'Publish Now'
-              )}
+              <Bell className="w-3.5 h-3.5" />
+              Notify Me
             </Button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ import { ProblemsPanel, type Problem } from '@/components/panels/ProblemsPanel';
 import { OutputPanel, type OutputLine, makeOutputLine } from '@/components/panels/OutputPanel';
 import { ProjectsPanel } from '@/components/panels/ProjectsPanel';
 import { IframePanel } from '@/components/panels/IframePanel';
+import { PersonalCanvas } from '@/components/panels/PersonalCanvas';
 import { AssetLibrary } from '@/components/assets/AssetLibrary';
 import { CommandPalette } from '@/components/layout/CommandPalette';
 import { BootstrapScreen } from '@/components/layout/BootstrapScreen';
@@ -1110,7 +1111,7 @@ http.createServer((req, res) => {
                     <>
                       {activeFile.language === 'tool' ? (
                         activeFile.id === 'tool:excalidraw' ? (
-                          <IframePanel title="Excalidraw" url="https://excalidraw.com/" icon={<PenTool className="w-5 h-5" />} />
+                          <PersonalCanvas />
                         ) : activeFile.id === 'tool:mdn' ? (
                           <IframePanel title="DevDocs" url="https://devdocs.io/" icon={<BookOpen className="w-5 h-5" />} />
                         ) : (
@@ -1266,6 +1267,9 @@ http.createServer((req, res) => {
                           serverReadyCount={serverReadyCount}
                           inspectEnabled={inspectEnabled}
                           onInspectChange={setInspectEnabled}
+                          theme={settings.theme}
+                          fontFamily={settings.fontFamily}
+                          fontSize={settings.fontSize}
                           onNavigate={(url) => {
                             // Find the file by name (simple path matching)
                             const targetName = url.split('/').pop() || url;
