@@ -135,17 +135,17 @@ export const SystemHeader = ({
             <DropdownMenuContent align="start" className="w-52 bg-[hsl(var(--crust))]/95 backdrop-blur-xl border border-[hsl(var(--surface1))] text-editor-text shadow-xl rounded-xl p-1 animate-scale-in">
               {onNewProject && (
                 <DropdownMenuItem onClick={onNewProject} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                  <FolderOpen className="w-3.5 h-3.5 text-blue-400" /> New Project
+                  <FolderOpen className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> New Project
                 </DropdownMenuItem>
               )}
               {onOpenProjects && (
                 <DropdownMenuItem onClick={onOpenProjects} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                  <Package className="w-3.5 h-3.5 text-purple-400" /> All Projects
+                  <Package className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> All Projects
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator className="bg-[hsl(var(--surface1))] my-1" />
               <DropdownMenuItem onClick={onExport} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                <FileArchive className="w-3.5 h-3.5 text-amber-400" /> Export as ZIP
+                <FileArchive className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> Export as ZIP
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -159,7 +159,7 @@ export const SystemHeader = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-52 bg-[hsl(var(--crust))]/95 backdrop-blur-xl border border-[hsl(var(--surface1))] text-editor-text shadow-xl rounded-xl p-1 animate-scale-in">
               <DropdownMenuItem onClick={onFormat} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                <AlignLeft className="w-3.5 h-3.5 text-indigo-400" /> Format Document
+                <AlignLeft className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> Format Document
                 <kbd className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-[hsl(var(--surface1))] text-[hsl(var(--overlay1))]">Alt+Shift+F</kbd>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -175,13 +175,13 @@ export const SystemHeader = ({
             <DropdownMenuContent align="start" className="w-52 bg-[hsl(var(--crust))]/95 backdrop-blur-xl border border-[hsl(var(--surface1))] text-editor-text shadow-xl rounded-xl p-1 animate-scale-in">
               {onToggleTerminal && (
                 <DropdownMenuItem onClick={onToggleTerminal} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                  <TerminalSquare className="w-3.5 h-3.5 text-emerald-400" /> {terminalOpen ? 'Hide Terminal' : 'Show Terminal'}
+                  <TerminalSquare className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> {terminalOpen ? 'Hide Terminal' : 'Show Terminal'}
                   <kbd className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-[hsl(var(--surface1))] text-[hsl(var(--overlay1))]">Ctrl+`</kbd>
                 </DropdownMenuItem>
               )}
               {onTogglePreview && (
                 <DropdownMenuItem onClick={onTogglePreview} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                  <Monitor className="w-3.5 h-3.5 text-sky-400" /> {rightPanelOpen ? 'Hide Preview' : 'Show Preview'}
+                  <Monitor className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> {rightPanelOpen ? 'Hide Preview' : 'Show Preview'}
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator className="bg-[hsl(var(--surface1))] my-1" />
@@ -194,7 +194,7 @@ export const SystemHeader = ({
               )}
               {onToggleZenMode && (
                 <DropdownMenuItem onClick={onToggleZenMode} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                  <EyeOff className="w-3.5 h-3.5 text-rose-400" /> {isZenMode ? 'Exit Zen Mode' : 'Zen Mode'}
+                  <EyeOff className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> {isZenMode ? 'Exit Zen Mode' : 'Zen Mode'}
                   <kbd className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-[hsl(var(--surface1))] text-[hsl(var(--overlay1))]">Ctrl+K Z</kbd>
                 </DropdownMenuItem>
               )}
@@ -211,12 +211,12 @@ export const SystemHeader = ({
             <DropdownMenuContent align="start" className="w-52 bg-[hsl(var(--crust))]/95 backdrop-blur-xl border border-[hsl(var(--surface1))] text-editor-text shadow-xl rounded-xl p-1 animate-scale-in">
               {canRun && (
                 <DropdownMenuItem onClick={onRun} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                  <Play className="w-3.5 h-3.5 text-emerald-400" /> Run Active File
+                  <Play className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> Run Active File
                   <kbd className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-[hsl(var(--surface1))] text-[hsl(var(--overlay1))]">Ctrl+Enter</kbd>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                <RefreshCw className="w-3.5 h-3.5 text-cyan-400" /> Restart Dev Server
+                <RefreshCw className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> Restart Dev Server
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -230,39 +230,39 @@ export const SystemHeader = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-52 bg-[hsl(var(--crust))]/95 backdrop-blur-xl border border-[hsl(var(--surface1))] text-editor-text shadow-xl rounded-xl p-1 animate-scale-in">
               <DropdownMenuItem className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                <HelpCircle className="w-3.5 h-3.5 text-sky-400" /> Documentation
+                <HelpCircle className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> Documentation
               </DropdownMenuItem>
               <DropdownMenuItem className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                <Keyboard className="w-3.5 h-3.5 text-purple-400" /> Keyboard Shortcuts
+                <Keyboard className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> Keyboard Shortcuts
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-[hsl(var(--surface1))] my-1" />
               <DropdownMenuItem className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
-                <Info className="w-3.5 h-3.5 text-emerald-400" /> About HRDK Pen
+                <Info className="w-3.5 h-3.5 text-[hsl(var(--overlay1))]" /> About HRDK Pen
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
 
-      {/* ── CENTER: Apple Dynamic Island / Pill for Active Context ── */}
-      <div className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[hsl(var(--surface0))]/50 border border-[hsl(var(--surface1))]/70 shadow-sm backdrop-blur-md">
+      {/* ── CENTER: Compact Native Context Capsule ── */}
+      <div className="hidden md:flex items-center gap-2 absolute left-1/2 -translate-x-1/2 max-w-[360px] truncate pointer-events-none">
+        <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[hsl(var(--surface0))]/40 border border-[hsl(var(--surface1))]/60 shadow-xs pointer-events-auto">
           {projectName && (
-            <span className="text-[11px] font-semibold tracking-tight text-[hsl(var(--text))]" title={projectName}>
+            <span className="text-[11px] font-medium tracking-tight text-[hsl(var(--subtext0))] truncate max-w-[120px]" title={projectName}>
               {projectName}
             </span>
           )}
           {activeFile && (
             <>
               <span className="text-[hsl(var(--surface2))] text-[10px]">/</span>
-              <span className="text-[11px] font-medium text-[hsl(var(--overlay1))] flex items-center gap-1.5">
+              <span className="text-[11px] font-medium text-[hsl(var(--text))] flex items-center gap-1.5 truncate max-w-[140px]" title={activeFile.name}>
                 {activeFile.name}
-                {langLabel && (
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-mono bg-blue-500/15 text-blue-400 border border-blue-500/20">
-                    {langLabel}
-                  </span>
-                )}
               </span>
+              {langLabel && (
+                <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-[hsl(var(--surface1))] text-[hsl(var(--subtext0))]">
+                  {langLabel}
+                </span>
+              )}
             </>
           )}
         </div>

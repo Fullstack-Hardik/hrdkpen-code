@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import {
   RefreshCw, ExternalLink, Download, Monitor,
   Smartphone, Tablet, Laptop, Bug, Globe, Lock, ShieldCheck, ArrowRight, Sun, Moon
@@ -253,13 +254,15 @@ export const LivePreview = ({
 
   return (
     <div className="flex flex-col h-full bg-[hsl(var(--base))]">
-      {/* Modern Browser Chrome Toolbar */}
+      {/* Modern Compact Native Browser Toolbar */}
       <div
-        className="flex items-center justify-between px-3.5 py-1.5 flex-shrink-0 bg-[hsl(var(--mantle))] border-b border-[hsl(var(--surface1))]"
+        className="flex items-center justify-between px-3 py-1.5 flex-shrink-0 bg-[hsl(var(--mantle))] border-b border-[hsl(var(--surface1))]"
+        role="toolbar"
+        aria-label="Browser Preview Toolbar"
       >
-        <div className="flex flex-1 items-center gap-2 mr-3 min-w-0">
-          <div className="flex items-center bg-[hsl(var(--crust))] border border-[hsl(var(--surface1))] rounded-lg px-2.5 h-7 flex-1 max-w-[380px] shadow-sm focus-within:border-blue-500/60 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all">
-            <Lock className="w-3 h-3 text-emerald-400 mr-2 flex-shrink-0" />
+        <div className="flex flex-1 items-center gap-2 mr-2 min-w-0">
+          <div className="flex items-center bg-[hsl(var(--crust))] border border-[hsl(var(--surface1))] rounded-lg px-2 h-7 flex-1 max-w-[340px] shadow-sm focus-within:border-blue-500/60 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all">
+            <Lock className="w-3 h-3 text-[hsl(var(--overlay1))] mr-1.5 flex-shrink-0" />
             <form 
               className="flex-1 min-w-0"
               onSubmit={(e) => {
@@ -280,99 +283,133 @@ export const LivePreview = ({
                 value={currentUrl}
                 onChange={e => setCurrentUrl(e.target.value)}
                 placeholder="https://hrdkpen.dev/preview"
+                aria-label="Preview URL"
                 className="w-full bg-transparent border-none outline-none text-xs text-[hsl(var(--text))] placeholder:text-[hsl(var(--overlay0))] font-mono truncate"
               />
             </form>
             {serverUrl && (
-              <span className="flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono flex-shrink-0 border border-emerald-500/20">
+              <span className="flex items-center gap-1 text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 font-mono flex-shrink-0 border border-emerald-500/20">
                 LIVE
               </span>
             )}
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {/* Device selector */}
           <div className="flex items-center bg-[hsl(var(--crust))] border border-[hsl(var(--surface1))] rounded-lg p-0.5">
             {([
               ['desktop', <Laptop className="w-3.5 h-3.5" />, 'Desktop'],
-              ['tablet',  <Tablet className="w-3.5 h-3.5" />, 'Tablet'],
+              ['tablet',  <Tablet className="w-3.5 h-3.5" />, 'Tablet (768px)'],
               ['mobile',  <Smartphone className="w-3.5 h-3.5" />, 'Mobile (375px)'],
             ] as const).map(([mode, icon, label]) => (
-              <button
-                key={mode}
-                onClick={() => setDevice(mode as DeviceMode)}
-                title={label}
-                className={`p-1.5 rounded-md transition-all ${
-                  device === mode 
-                    ? 'bg-[hsl(var(--surface0))] text-blue-400 shadow-sm' 
-                    : 'text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))]'
-                }`}
-              >
-                {icon}
-              </button>
+              <Tooltip key={mode}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setDevice(mode as DeviceMode)}
+                    aria-label={label}
+                    className={`h-6 w-6 flex items-center justify-center rounded-md transition-all ${
+                      device === mode 
+                        ? 'bg-[hsl(var(--surface0))] text-[hsl(var(--text))] shadow-sm border border-[hsl(var(--surface2))]' 
+                        : 'text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))]'
+                    }`}
+                  >
+                    {icon}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-xs">
+                  {label}
+                </TooltipContent>
+              </Tooltip>
             ))}
           </div>
 
           {/* Preview Theme Toggle (Dark / Light) */}
-          <button
-            onClick={() => {
-              setPreviewThemeMode(prev => prev === 'dark' ? 'light' : 'dark');
-              setRefreshKey(k => k + 1);
-            }}
-            title={`Preview Theme: ${previewThemeMode === 'dark' ? 'Dark' : 'Light'} (click to toggle)`}
-            className="p-1 rounded-md hover:bg-[hsl(var(--surface0))] transition-all text-[hsl(var(--overlay1))] hover:text-white"
-          >
-            {previewThemeMode === 'dark' ? <Moon className="w-3.5 h-3.5 text-blue-400" /> : <Sun className="w-3.5 h-3.5 text-amber-400" />}
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => {
+                  setPreviewThemeMode(prev => prev === 'dark' ? 'light' : 'dark');
+                  setRefreshKey(k => k + 1);
+                }}
+                aria-label={`Preview Theme: ${previewThemeMode === 'dark' ? 'Dark' : 'Light'}`}
+                className="h-7 w-7 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] transition-all"
+              >
+                {previewThemeMode === 'dark' ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5 text-amber-400" />}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">
+              Preview Theme: {previewThemeMode === 'dark' ? 'Dark' : 'Light'}
+            </TooltipContent>
+          </Tooltip>
 
-          <button
-            onClick={toggleInspect}
-            title="Toggle Inspect (Eruda DevTools)"
-            className="px-2 py-1 text-xs rounded transition-fast flex items-center gap-1"
-            style={{
-              background: isInspect ? 'hsl(var(--blue) / 0.15)' : 'transparent',
-              color: isInspect ? 'hsl(var(--blue))' : 'hsl(var(--overlay1))',
-            }}
-          >
-            <Bug className="w-3.5 h-3.5" />
-          </button>
+          {/* Inspect DevTools */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={toggleInspect}
+                aria-label="Inspect (Eruda DevTools)"
+                className={`h-7 w-7 flex items-center justify-center rounded-md transition-all ${
+                  isInspect 
+                    ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30' 
+                    : 'text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))]'
+                }`}
+              >
+                <Bug className="w-3.5 h-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">
+              Toggle Inspector (DevTools)
+            </TooltipContent>
+          </Tooltip>
 
-          <button
-            onClick={() => setAutoRefresh(v => !v)}
-            title={autoRefresh ? 'Auto-refresh ON — click to disable' : 'Auto-refresh OFF — click to enable'}
-            className="px-2 py-1 text-xs rounded transition-fast"
-            style={{
-              background: autoRefresh ? 'hsl(var(--green) / 0.15)' : 'transparent',
-              color: autoRefresh ? 'hsl(var(--green))' : 'hsl(var(--overlay1))',
-            }}
-          >
-            Auto
-          </button>
+          {/* Refresh preview */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setRefreshKey(k => k + 1)}
+                aria-label="Refresh preview"
+                className="h-7 w-7 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] transition-all"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">
+              Reload Preview
+            </TooltipContent>
+          </Tooltip>
 
-          <button
-            onClick={() => setRefreshKey(k => k + 1)}
-            title="Refresh preview"
-            className="p-1 rounded hover:bg-editor-active-tab transition-fast text-editor-text-muted hover:text-editor-text"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-          </button>
+          {/* Download HTML */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={download}
+                aria-label="Download as HTML"
+                className="h-7 w-7 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] transition-all"
+              >
+                <Download className="w-3.5 h-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">
+              Export HTML
+            </TooltipContent>
+          </Tooltip>
 
-          <button
-            onClick={download}
-            title="Download as HTML"
-            className="p-1 rounded hover:bg-editor-active-tab transition-fast text-editor-text-muted hover:text-editor-text"
-          >
-            <Download className="w-3.5 h-3.5" />
-          </button>
-
-          <button
-            onClick={openInNewTab}
-            title="Open in new tab"
-            className="p-1 rounded hover:bg-editor-active-tab transition-fast text-editor-text-muted hover:text-editor-text"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-          </button>
+          {/* Open in new tab */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={openInNewTab}
+                aria-label="Open preview in new tab"
+                className="h-7 w-7 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] transition-all"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">
+              Open in New Window
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 

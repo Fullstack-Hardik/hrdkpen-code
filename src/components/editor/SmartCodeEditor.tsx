@@ -8,6 +8,7 @@ import {
   ContextMenuTrigger,
   ContextMenuSeparator,
 } from '@/components/ui/context-menu';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { X, Monitor, Bot, Search, Minus, Square, BookOpen, Plus, Image as ImageIcon, PenTool, FolderTree, GraduationCap, Copy, Check, Brain, Loader2, Trash2, HelpCircle, Play, Activity, Terminal as TerminalIcon, Sparkles, Globe, Eye, Layers } from 'lucide-react';
 
 import { SystemHeader } from './SystemHeader';
@@ -1179,82 +1180,132 @@ http.createServer((req, res) => {
                 <ResizableHandle withHandle />
                 <ResizablePanel defaultSize={25} minSize={20} maxSize={50}>
                   <div className="flex flex-col h-full border-l border-editor-border">
-                    {/* Right panel tabs (Modern Glassmorphic Tab Bar) */}
+                    {/* Right panel tabs (Compact Native macOS-style Icon Toolbar) */}
                     <div
-                      className="flex items-center justify-between flex-shrink-0 px-3 bg-[hsl(var(--crust))] border-b border-[hsl(var(--surface1))]"
-                      style={{ height: 44 }}
+                      className="flex items-center justify-between flex-shrink-0 px-2.5 bg-[hsl(var(--crust))] border-b border-[hsl(var(--surface1))]"
+                      style={{ height: 38 }}
+                      role="toolbar"
+                      aria-label="Right Panel Toolbar"
                     >
-                      <div className="flex items-center p-0.5 rounded-lg bg-[hsl(var(--mantle))] border border-[hsl(var(--surface1))] shadow-sm">
-                        <button
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all ${
-                            rightPanel === 'preview' 
-                              ? 'bg-[hsl(var(--surface0))] text-blue-400 font-semibold shadow-sm border border-[hsl(var(--surface2))]' 
-                              : 'text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0)/0.4)]'
-                          }`}
-                          onClick={() => setRightPanel('preview')}
-                        >
-                          <Globe className={`w-3.5 h-3.5 ${rightPanel === 'preview' ? 'text-blue-400 animate-pulse' : 'text-blue-400/70'}`} />
-                          <span>Browser Preview</span>
-                        </button>
-                        <button
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all ${
-                            rightPanel === 'ai' 
-                              ? 'bg-[hsl(var(--surface0))] text-purple-400 font-semibold shadow-sm border border-[hsl(var(--surface2))]' 
-                              : 'text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0)/0.4)]'
-                          }`}
-                          onClick={() => setRightPanel('ai')}
-                        >
-                          <Sparkles className={`w-3.5 h-3.5 ${rightPanel === 'ai' ? 'text-purple-400 animate-spin-slow' : 'text-purple-400/70'}`} />
-                          <span>AI Assistant</span>
-                        </button>
-                        <button
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all ${
-                            rightPanel === 'docs' 
-                              ? 'bg-[hsl(var(--surface0))] text-emerald-400 font-semibold shadow-sm border border-[hsl(var(--surface2))]' 
-                              : 'text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0)/0.4)]'
-                          }`}
-                          onClick={() => setRightPanel('docs')}
-                        >
-                          <BookOpen className={`w-3.5 h-3.5 ${rightPanel === 'docs' ? 'text-emerald-400' : 'text-emerald-400/70'}`} />
-                          <span>Docs</span>
-                        </button>
-                        <button
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all ${
-                            rightPanel === 'assets' 
-                              ? 'bg-[hsl(var(--surface0))] text-amber-400 font-semibold shadow-sm border border-[hsl(var(--surface2))]' 
-                              : 'text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0)/0.4)]'
-                          }`}
-                          onClick={() => setRightPanel('assets')}
-                        >
-                          <Layers className={`w-3.5 h-3.5 ${rightPanel === 'assets' ? 'text-amber-400' : 'text-amber-400/70'}`} />
-                          <span>Assets</span>
-                        </button>
+                      <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[hsl(var(--mantle))] border border-[hsl(var(--surface1))]/80">
+                        {/* Browser Preview Tab */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setRightPanel('preview')}
+                              aria-label="Browser Preview"
+                              className={`h-7 w-7 flex items-center justify-center rounded-md transition-all ${
+                                rightPanel === 'preview'
+                                  ? 'bg-[hsl(var(--surface0))] text-[hsl(var(--text))] shadow-sm border border-[hsl(var(--surface2))]'
+                                  : 'text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))/0.4]'
+                              }`}
+                            >
+                              <Globe className="w-3.5 h-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="text-xs">
+                            Browser Preview
+                          </TooltipContent>
+                        </Tooltip>
+
+                        {/* AI Assistant Tab */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setRightPanel('ai')}
+                              aria-label="AI Assistant"
+                              className={`h-7 w-7 flex items-center justify-center rounded-md transition-all ${
+                                rightPanel === 'ai'
+                                  ? 'bg-[hsl(var(--surface0))] text-[hsl(var(--text))] shadow-sm border border-[hsl(var(--surface2))]'
+                                  : 'text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))/0.4]'
+                              }`}
+                            >
+                              <Sparkles className="w-3.5 h-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="text-xs">
+                            AI Assistant
+                          </TooltipContent>
+                        </Tooltip>
+
+                        {/* Docs Tab */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setRightPanel('docs')}
+                              aria-label="Documentation"
+                              className={`h-7 w-7 flex items-center justify-center rounded-md transition-all ${
+                                rightPanel === 'docs'
+                                  ? 'bg-[hsl(var(--surface0))] text-[hsl(var(--text))] shadow-sm border border-[hsl(var(--surface2))]'
+                                  : 'text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))/0.4]'
+                              }`}
+                            >
+                              <BookOpen className="w-3.5 h-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="text-xs">
+                            Documentation
+                          </TooltipContent>
+                        </Tooltip>
+
+                        {/* Assets Tab */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setRightPanel('assets')}
+                              aria-label="Asset Library"
+                              className={`h-7 w-7 flex items-center justify-center rounded-md transition-all ${
+                                rightPanel === 'assets'
+                                  ? 'bg-[hsl(var(--surface0))] text-[hsl(var(--text))] shadow-sm border border-[hsl(var(--surface2))]'
+                                  : 'text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))/0.4]'
+                              }`}
+                            >
+                              <Layers className="w-3.5 h-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="text-xs">
+                            Asset Library
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
-                      
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          onClick={() => {
-                            setSettingsCategory('diagnostics');
-                            setShowSettings(true);
-                          }}
-                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium transition-all border ${
-                            doctorKit.status !== 'healthy' 
-                              ? 'text-blue-400 border-blue-500/30 bg-blue-500/10' 
-                              : 'text-[hsl(var(--subtext0))] border-[hsl(var(--surface1))] bg-[hsl(var(--mantle))] hover:bg-[hsl(var(--surface0))]'
-                          }`}
-                          title="System Diagnostics & Self-Healing"
-                        >
-                          <Activity className={`w-3 h-3 ${doctorKit.status === 'scanning' ? 'animate-pulse text-blue-400' : doctorKit.status === 'error' ? 'text-red-400' : 'text-emerald-400'}`} />
-                          <span>DoctorKit</span>
-                        </button>
-                        <div className="w-[1px] h-3.5 bg-[hsl(var(--surface1))] mx-0.5"></div>
-                        <button
-                          onClick={() => setRightPanel(null)}
-                          className="w-7 h-7 flex items-center justify-center rounded-md text-[hsl(var(--subtext0))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] transition-all"
-                          title="Hide Right Panel"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
+
+                      <div className="flex items-center gap-1">
+                        {/* DoctorKit Diagnostics */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => {
+                                setSettingsCategory('diagnostics');
+                                setShowSettings(true);
+                              }}
+                              aria-label="DoctorKit Diagnostics"
+                              className="h-7 w-7 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] border border-[hsl(var(--surface1))]/80 bg-[hsl(var(--mantle))] transition-all"
+                            >
+                              <Activity className={`w-3.5 h-3.5 ${doctorKit.status === 'scanning' ? 'animate-pulse text-blue-400' : doctorKit.status === 'error' ? 'text-rose-400' : 'text-emerald-400'}`} />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="text-xs">
+                            DoctorKit Diagnostics ({doctorKit.status})
+                          </TooltipContent>
+                        </Tooltip>
+
+                        <div className="w-[1px] h-3.5 bg-[hsl(var(--surface1))] mx-0.5" />
+
+                        {/* Close Right Panel */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setRightPanel(null)}
+                              aria-label="Close Right Panel"
+                              className="h-7 w-7 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] transition-all"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="text-xs">
+                            Hide Panel
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
 
@@ -1320,22 +1371,24 @@ http.createServer((req, res) => {
               <div className="flex-1 flex flex-col h-full border-t border-editor-border">
             {/* Bottom panel tabs */}
             <div
-              className="flex items-center justify-between flex-shrink-0 px-3 py-1 bg-[hsl(var(--crust))]/80 border-b border-[hsl(var(--surface1))]/70"
+              className="flex items-center justify-between flex-shrink-0 px-3 py-1 bg-[hsl(var(--crust))] border-b border-[hsl(var(--surface1))]"
               style={{
-                height: 38,
+                height: 36,
               }}
+              role="toolbar"
+              aria-label="Bottom Workspace Toolbar"
             >
-              <div className="flex items-center p-0.5 rounded-lg bg-[hsl(var(--surface0))]/50 border border-[hsl(var(--surface1))]/60">
+              <div className="flex items-center p-0.5 rounded-lg bg-[hsl(var(--mantle))] border border-[hsl(var(--surface1))]/80">
                 {(['terminal', 'output', 'problems', 'inspect', 'help'] as BottomPanel[]).map(tab => {
                   const isActive = bottomTab === tab;
                   return (
                     <button
                       key={tab}
                       onClick={() => setBottomTab(tab)}
-                      className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-medium transition-all ${
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
                         isActive
-                          ? 'bg-[hsl(var(--surface1))] text-white font-semibold shadow-sm'
-                          : 'text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface0))]'
+                          ? 'bg-[hsl(var(--surface0))] text-[hsl(var(--text))] font-semibold shadow-xs border border-[hsl(var(--surface2))]'
+                          : 'text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))/0.5]'
                       }`}
                     >
                       {tab === 'problems' && errorCount > 0 && (
@@ -1351,41 +1404,73 @@ http.createServer((req, res) => {
                   );
                 })}
               </div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1">
                 {bottomTab === 'terminal' && (
                   <>
-                    <button
-                      onClick={() => terminalRefs.current[activeTerminalId]?.clear()}
-                      className="px-2.5 py-1 text-[11px] font-medium rounded-lg text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface0))] transition-all border border-transparent hover:border-[hsl(var(--surface1))]"
-                      title="Clear Terminal"
-                    >
-                      <Trash2 className="w-3 h-3 inline mr-1" />
-                      Clear
-                    </button>
-                    <button
-                      onClick={() => terminalRefs.current[activeTerminalId]?.execute('help')}
-                      className="px-2.5 py-1 text-[11px] font-medium rounded-lg text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface0))] transition-all border border-transparent hover:border-[hsl(var(--surface1))]"
-                      title="Help Menu"
-                    >
-                      <HelpCircle className="w-3 h-3 inline mr-1" />
-                      Help
-                    </button>
-                    <button
-                      onClick={() => terminalRefs.current[activeTerminalId]?.execute('npm run dev')}
-                      className="px-2.5 py-1 text-[11px] font-semibold rounded-lg text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 transition-all shadow-sm"
-                      title="Start Dev Server"
-                    >
-                      <Play className="w-3 h-3 inline mr-1 fill-current" />
-                      Run Dev
-                    </button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => terminalRefs.current[activeTerminalId]?.clear()}
+                          aria-label="Clear Terminal"
+                          className="h-7 w-7 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] transition-all"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs">
+                        Clear Terminal
+                      </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => terminalRefs.current[activeTerminalId]?.execute('help')}
+                          aria-label="Help Menu"
+                          className="h-7 w-7 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] transition-all"
+                        >
+                          <HelpCircle className="w-3.5 h-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs">
+                        Terminal Help
+                      </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => terminalRefs.current[activeTerminalId]?.execute('npm run dev')}
+                          aria-label="Start Dev Server"
+                          className="h-7 px-2.5 flex items-center gap-1.5 rounded-md text-[11px] font-medium text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] bg-[hsl(var(--mantle))] border border-[hsl(var(--surface1))] transition-all shadow-xs"
+                        >
+                          <Play className="w-3 h-3 fill-current text-emerald-400" />
+                          <span>Run Dev</span>
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs">
+                        Execute 'npm run dev'
+                      </TooltipContent>
+                    </Tooltip>
                   </>
                 )}
-                <button
-                  onClick={() => setBottomPanelOpen(false)}
-                  className="px-2 text-editor-text-dim hover:text-editor-text transition-fast ml-1"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
+
+                <div className="w-[1px] h-3.5 bg-[hsl(var(--surface1))] mx-0.5" />
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => setBottomPanelOpen(false)}
+                      aria-label="Close Bottom Panel"
+                      className="h-7 w-7 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))] hover:bg-[hsl(var(--surface0))] transition-all"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs">
+                    Hide Panel (Ctrl+`)
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
 

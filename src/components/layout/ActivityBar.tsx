@@ -47,12 +47,12 @@ export const ActivityBar = ({
   errorCount,
 }: ActivityBarProps) => {
   const topItems: BarItem[] = [
-    { id: 'explorer',     icon: <FolderGit2 className="w-[18px] h-[18px] text-sky-400" />,     label: 'File Explorer',     position: 'top' },
-    { id: 'search',       icon: <SearchCode className="w-[18px] h-[18px] text-indigo-400" />, label: 'Global Search',     position: 'top' },
-    { id: 'projects',     icon: <FolderKanban className="w-[18px] h-[18px] text-purple-400" />, label: 'Project Workspaces', position: 'top' },
-    { id: 'docs',         icon: <BookMarked className="w-[18px] h-[18px] text-emerald-400" />, label: 'Documentation',     position: 'top' },
-    { id: 'excalidraw',   icon: <Palette className="w-[18px] h-[18px] text-amber-400" />,       label: 'Whiteboard',        position: 'top' },
-    { id: 'mdn',          icon: <Compass className="w-[18px] h-[18px] text-teal-400" />,        label: 'Developer Docs',    position: 'top' },
+    { id: 'explorer',     icon: <FolderGit2 className="w-[18px] h-[18px]" />,     label: 'File Explorer',     position: 'top' },
+    { id: 'search',       icon: <SearchCode className="w-[18px] h-[18px]" />,     label: 'Global Search',     position: 'top' },
+    { id: 'projects',     icon: <FolderKanban className="w-[18px] h-[18px]" />,   label: 'Project Workspaces', position: 'top' },
+    { id: 'docs',         icon: <BookMarked className="w-[18px] h-[18px]" />,     label: 'Documentation',     position: 'top' },
+    { id: 'excalidraw',   icon: <Palette className="w-[18px] h-[18px]" />,        label: 'Whiteboard',        position: 'top' },
+    { id: 'mdn',          icon: <Compass className="w-[18px] h-[18px]" />,        label: 'Developer Docs',    position: 'top' },
   ];
 
   const renderItem = (item: BarItem) => {
@@ -114,7 +114,7 @@ export const ActivityBar = ({
           aria-pressed={terminalOpen}
         >
           {terminalOpen && <span className="activity-bar-indicator" />}
-          <Terminal className="w-[18px] h-[18px] relative z-10 text-emerald-400" />
+          <Terminal className="w-[18px] h-[18px] relative z-10 transition-colors" />
           {errorCount > 0 && (
             <span
               className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white z-20 shadow-sm"
