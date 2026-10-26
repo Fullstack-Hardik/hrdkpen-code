@@ -52,12 +52,35 @@ class FSSyncService {
     return this.deletedPaths.has(wcPath.startsWith('/') ? wcPath : `/${wcPath}`);
   }
 
+  private isSyncPaused = false;
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** Pause sync operations during active npm installation or project mounting */
+  pauseSync() {
+    this.isSyncPaused = true;
+  }
+
+  /** Resume sync operations */
+  resumeSync() {
+    this.isSyncPaused = false;
+  }
+
+  /** Debounced sync trigger */
+  triggerSync(delay = 1000) {
+    if (this.isSyncPaused) return;
+    if (this.debounceTimer) clearTimeout(this.debounceTimer);
+    this.debounceTimer = setTimeout(() => {
+      this.forceSync();
+    }, delay);
+  }
+
   /**
    * Manually trigger a sync from WC → workspace state.
    * Called after npm install or other operations that generate new files.
    * Respects the deletedPaths registry.
    */
   async forceSync() {
+    if (this.isSyncPaused) return;
     try {
       const existing = this.getCurrentFiles ? this.getCurrentFiles() : [];
       const raw = await readWebContainerFS(existing);
@@ -80,15 +103,17 @@ class FSSyncService {
     };
   }
 
-  /** Start polling the WebContainer FS for changes. */
+  /** Start controlled polling with a safer 5-second interval */
   startWatching() {
     if (this.watchInterval) return;
     // Initial sync
     this.forceSync();
-    // Poll every 2 seconds
+    // Controlled interval
     this.watchInterval = setInterval(() => {
-      this.forceSync();
-    }, 2000);
+      if (!this.isSyncPaused) {
+        this.forceSync();
+      }
+    }, 5000);
   }
 
   /** Stop polling the WebContainer FS. */
@@ -96,6 +121,10 @@ class FSSyncService {
     if (this.watchInterval) {
       clearInterval(this.watchInterval);
       this.watchInterval = null;
+    }
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
     }
   }
 

@@ -449,6 +449,10 @@ export const FileExplorer = ({
                       <span className="w-3.5 h-3.5 flex-shrink-0">{getFileLanguageIcon('server.js', 'w-3.5 h-3.5')}</span>
                       Express API Server
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onLoadTemplate('ejs')} className="gap-2 text-xs cursor-pointer">
+                      <span className="w-3.5 h-3.5 flex-shrink-0">{getFileLanguageIcon('index.ejs', 'w-3.5 h-3.5')}</span>
+                      Express + EJS
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onLoadTemplate('node')} className="gap-2 text-xs cursor-pointer">
                       <span className="w-3.5 h-3.5 flex-shrink-0">{getFileLanguageIcon('index.js', 'w-3.5 h-3.5')}</span>
                       Node.js Script

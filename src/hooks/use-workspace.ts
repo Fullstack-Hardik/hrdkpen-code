@@ -99,6 +99,7 @@ export function detectProjectLanguage(files: FileNode[]): string {
       try {
         const p = JSON.parse(pkg.content);
         const deps = { ...p.dependencies, ...p.devDependencies };
+        if (deps['ejs'] || allFiles.some(f => f.name.endsWith('.ejs'))) return 'ejs';
         if (deps['react']) return 'react';
         if (deps['express']) return 'express';
         if (deps['next']) return 'next';
@@ -107,6 +108,8 @@ export function detectProjectLanguage(files: FileNode[]): string {
     }
     return 'node';
   }
+  // Check for standalone EJS or template files
+  if (allFiles.some(f => f.name.endsWith('.ejs'))) return 'ejs';
   // Python
   if (allFiles.find(f => f.name.endsWith('.py'))) return 'python';
   // C/C++
@@ -407,12 +410,12 @@ export function useWorkspace() {
     let nodes: FileNode[] = [];
     let needsInstall = false;
 
-    // For Node/React/Express, we want to create an empty project and run real commands
-    if (type === 'react' || type === 'node' || type === 'express') {
-      nodes = []; // Empty project, will be scaffolded by processManager
-      needsInstall = true;
-    } else if (type !== 'empty') {
+    if (type !== 'empty' && TEMPLATES[type]) {
       nodes = TEMPLATES[type]();
+      // Projects with package.json need npm dependency installation
+      if (['react', 'node', 'express', 'ejs'].includes(type as string)) {
+        needsInstall = true;
+      }
     }
 
     const templateName = type === 'empty' ? 'Empty Project' : `${type}-project`;

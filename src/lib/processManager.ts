@@ -20,9 +20,19 @@ class ProcessManager {
   private processes: Map<string, ManagedProcess> = new Map();
   private listeners: Set<Listener> = new Set();
   private serverReadyListenerAdded = false;
+  private activeProjectId: string | null = null;
+  private onServerReadyCallback?: (projectId: string, url: string, port: number) => void;
 
   constructor() {
     this.setupServerReady();
+  }
+
+  setActiveProject(projectId: string | null) {
+    this.activeProjectId = projectId;
+  }
+
+  setOnServerReady(callback: (projectId: string, url: string, port: number) => void) {
+    this.onServerReadyCallback = callback;
   }
 
   private async setupServerReady() {
@@ -30,12 +40,21 @@ class ProcessManager {
     try {
       const wc = await getWebContainer();
       wc.on('server-ready', (port, url) => {
-        // Find the active 'dev' process and assign port/url
+        // Target processes belonging to the active project first, or any dev/start process
+        let matched = false;
         for (const [id, proc] of this.processes.entries()) {
-          if (proc.status === 'running' || proc.command.includes('dev') || proc.command.includes('start')) {
+          const isProjectMatch = !this.activeProjectId || proc.projectId === this.activeProjectId;
+          if (isProjectMatch && (proc.status === 'running' || proc.command.includes('dev') || proc.command.includes('start') || proc.command.includes('node'))) {
             this.processes.set(id, { ...proc, port, url, status: 'running' });
-            this.notify();
+            matched = true;
           }
+        }
+        if (matched) {
+          this.notify();
+        }
+
+        if (this.activeProjectId) {
+          this.onServerReadyCallback?.(this.activeProjectId, url, port);
         }
       });
       this.serverReadyListenerAdded = true;

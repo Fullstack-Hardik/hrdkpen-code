@@ -44,6 +44,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { FileSystemTree } from '@webcontainer/api';
 import { processManager } from '@/lib/processManager';
 import { fsSyncService } from '@/lib/fsSync';
+import { projectBootstrapService, type BootstrapStatus } from '@/lib/projectBootstrap';
 
 import type { FileNode } from '@/types';
 
@@ -158,153 +159,57 @@ export const SmartCodeEditor = () => {
   const [serverUrl, setServerUrl] = useState<string | null>(null);
   const [serverReadyCount, setServerReadyCount] = useState(0);
   const [inspectEnabled, setInspectEnabled] = useState(false);
+  const [bootstrapStatus, setBootstrapStatus] = useState<BootstrapStatus | undefined>(undefined);
   const aiAssistantRef = useRef<AIAssistantRef>(null);
-  const staticServerRunning = useRef<string | null>(null);
 
   // Auto-complete state
   const [brainWidget, setBrainWidget] = useState<{ visible: boolean; top: number; left: number; loading: boolean }>({ visible: false, top: 0, left: 0, loading: false });
   const cursorPixelRef = useRef({ top: 0, left: 0 });
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ─── Listen to WebContainer server ready ───
+  // ─── Project Bootstrap & Runtime Integration ───
   useEffect(() => {
-    let cleanup = false;
-    getWebContainer().then(wc => {
-      if (cleanup) return;
-      wc.on('server-ready', (port, url) => {
-        console.log(`Server ready on port ${port} at ${url}`);
-        setServerUrl(url);
-        setServerReadyCount(c => c + 1);
-      });
-    }).catch(err => console.error(err));
-    return () => { cleanup = true; };
-  }, []);
+    // Keep processManager aware of active project
+    processManager.setActiveProject(workspace.activeProjectId);
 
-  // ─── Sync Workspace to WebContainer ───
-  const lastMountedProjectRef = useRef<string | null>(null);
-  
-  useEffect(() => {
-    const syncToWC = async () => {
-      if (!workspace.isReady || !workspace.activeProjectId) return;
-      
-      try {
-        const wc = await getWebContainer();
-        
-        // If it's a new project, mount the entire tree
-        if (lastMountedProjectRef.current !== workspace.activeProjectId) {
-          const buildTree = (nodes: FileNode[]): FileSystemTree => {
-            const tree: FileSystemTree = {};
-            for (const n of nodes) {
-              if (n.type === 'file') {
-                let contents = n.content ?? '';
-                if (inspectEnabled && (n.name === 'index.html' || n.name.endsWith('.html'))) {
-                  contents = contents.replace(/<head([^>]*)>/i, `<head$1><script src="https://cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init({defaults:{displaySize:100,transparency:1,theme:'Dark'}}); eruda.show(); eruda._entryBtn.hide();</script>`);
-                }
-                tree[n.name] = { file: { contents } };
-              } else if (n.type === 'folder') {
-                tree[n.name] = { directory: buildTree(n.children ?? []) };
-              }
-            }
-            return tree;
-          };
-          await clearWebContainerFS();
-          await wc.mount(buildTree(workspace.files));
-          lastMountedProjectRef.current = workspace.activeProjectId;
-
-          // Restored project boot logic
-          const pkgFile = workspace.files.find(f => f.name === 'package.json');
-          if (pkgFile && pkgFile.content) {
-            try {
-              const pkg = JSON.parse(pkgFile.content);
-              // ✅ FIX: Check if node_modules already exists before running npm install
-              // This avoids unnecessary reinstall within the same session
-              let hasNodeModules = false;
-              try {
-                await wc.fs.readdir('/node_modules');
-                hasNodeModules = true;
-              } catch { /* node_modules doesn't exist */ }
-
-              if (!hasNodeModules) {
-                const p = await processManager.spawn(workspace.activeProjectId, 'npm', ['install', '--no-audit', '--no-fund', '--legacy-peer-deps']);
-                p.exit.then(() => {
-                  if (pkg.scripts && pkg.scripts.dev) {
-                    processManager.spawn(workspace.activeProjectId, 'npm', ['run', 'dev']).catch(console.error);
-                  } else if (pkg.scripts && pkg.scripts.start) {
-                    processManager.spawn(workspace.activeProjectId, 'npm', ['start']).catch(console.error);
-                  }
-                });
-              } else {
-                // node_modules exists: just run dev server
-                if (pkg.scripts && pkg.scripts.dev) {
-                  processManager.spawn(workspace.activeProjectId, 'npm', ['run', 'dev']).catch(console.error);
-                } else if (pkg.scripts && pkg.scripts.start) {
-                  processManager.spawn(workspace.activeProjectId, 'npm', ['start']).catch(console.error);
-                }
-              }
-            } catch (e) {
-              console.error('Failed to parse package.json on boot', e);
-            }
-          }
-
-          // Start a lightweight static server if this is a static project (no package.json)
-          const hasPackageJson = !!pkgFile;
-          if (!hasPackageJson && staticServerRunning.current !== workspace.activeProjectId) {
-            staticServerRunning.current = workspace.activeProjectId;
-            
-            const serverScript = `
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-http.createServer((req, res) => {
-  let urlPath = req.url.split('?')[0];
-  let p = path.join(__dirname, urlPath === '/' ? 'index.html' : urlPath);
-  if (!fs.existsSync(p)) { 
-    res.statusCode = 404; 
-    return res.end('404 Not Found'); 
-  }
-  const ext = path.extname(p);
-  const mime = {
-    '.html': 'text/html',
-    '.js': 'text/javascript',
-    '.css': 'text/css',
-    '.json': 'application/json',
-    '.png': 'image/png',
-    '.jpg': 'image/jpg',
-    '.svg': 'image/svg+xml'
-  }[ext] || 'text/plain';
-  res.setHeader('Content-Type', mime);
-  res.end(fs.readFileSync(p));
-}).listen(3000, () => console.log('Static server started'));
-`;
-            await wc.fs.writeFile('/.static-server.js', serverScript);
-            // We use the raw WebContainer spawn here so it runs silently in the background
-            // without cluttering the Terminal UI, but still triggers 'server-ready'
-            wc.spawn('node', ['/.static-server.js']).catch(console.error);
-          }
-        } else {
-          // If just toggling inspect, only rewrite HTML files
-          const updateHtmlFiles = async (nodes: FileNode[], path = '') => {
-            for (const n of nodes) {
-              const fullPath = path ? `${path}/${n.name}` : `/${n.name}`;
-              if (n.type === 'file' && (n.name === 'index.html' || n.name.endsWith('.html'))) {
-                let contents = n.content ?? '';
-                if (inspectEnabled) {
-                  contents = contents.replace(/<head([^>]*)>/i, `<head$1><script src="https://cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init({defaults:{displaySize:100,transparency:1,theme:'Dark'}}); eruda.show(); eruda._entryBtn.hide();</script>`);
-                }
-                await wc.fs.writeFile(fullPath, contents).catch(() => {});
-              } else if (n.type === 'folder') {
-                await updateHtmlFiles(n.children ?? [], fullPath);
-              }
-            }
-          };
-          await updateHtmlFiles(workspace.files);
+    const unsubscribe = projectBootstrapService.subscribe((status) => {
+      if (status.projectId === workspace.activeProjectId) {
+        setBootstrapStatus(status);
+        if (status.serverUrl) {
+          setServerUrl(status.serverUrl);
+          setServerReadyCount(c => c + 1);
         }
-      } catch (e) {
-        console.error('Failed to sync to WebContainer:', e);
       }
-    };
-    syncToWC();
-  }, [workspace.activeProjectId, workspace.isReady, inspectEnabled]); // Intentionally omitting workspace.files to avoid remount loop
+    });
+
+    return () => unsubscribe();
+  }, [workspace.activeProjectId]);
+
+  // Sync / Bootstrap project into WebContainer when active project changes
+  const lastMountedProjectRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!workspace.isReady || !workspace.activeProjectId) return;
+
+    if (lastMountedProjectRef.current !== workspace.activeProjectId) {
+      lastMountedProjectRef.current = workspace.activeProjectId;
+      setServerUrl(null);
+
+      // Execute centralized project bootstrap pipeline
+      projectBootstrapService.bootstrapProject(
+        workspace.activeProjectId,
+        workspace.files,
+        {
+          inspectEnabled,
+          onLog: (type, text) => {
+            addOutput(type, text);
+          },
+        }
+      ).catch((err) => {
+        console.error('Failed to bootstrap project:', err);
+      });
+    }
+  }, [workspace.activeProjectId, workspace.isReady, workspace.files, inspectEnabled, addOutput]);
 
   // Use a ref to hold latest workspace files for the sync service to preserve UUIDs
   const workspaceFilesRef = useRef(workspace.files);
@@ -812,33 +717,7 @@ http.createServer((req, res) => {
           fsSyncService.forceSync();
         }}
         onLoadTemplate={async (type) => {
-          const result = await workspace.loadTemplate(type);
-          
-          if (result.needsInstall) {
-            setIsScaffolding(true);
-            setTimeout(async () => {
-              setBottomPanelOpen(true);
-              setBottomTab('terminal');
-              
-              if (result.type === 'react') {
-                 // Vite 6+ in create-vite@latest uses @rolldown/binding-wasm32-wasi which fails in WebContainers due to experimental WASI / missing native bindings.
-                 // Pin to Vite 5.4.1 which works stably in WebContainer browser environments.
-                 const p1 = await processManager.spawn(result.id, 'npx', ['-y', 'create-vite@5.4.1', '.', '--template', 'react-ts']);
-                 await p1.exit;
-                 const p2 = await processManager.spawn(result.id, 'npm', ['install', '--no-audit', '--no-fund', '--legacy-peer-deps']);
-                 await p2.exit;
-                 await processManager.spawn(result.id, 'npm', ['run', 'dev']);
-              } else if (result.type === 'express' || result.type === 'node') {
-                 const p1 = await processManager.spawn(result.id, 'npm', ['init', '-y']);
-                 await p1.exit;
-                 if (result.type === 'express') {
-                    const p2 = await processManager.spawn(result.id, 'npm', ['install', 'express', '--no-audit', '--no-fund']);
-                    await p2.exit;
-                 }
-              }
-              setIsScaffolding(false);
-            }, 1000);
-          }
+          await workspace.loadTemplate(type);
         }}
       />
     );
@@ -867,33 +746,7 @@ http.createServer((req, res) => {
         onDeleteProject={workspace.deleteProject}
         onLoadTemplate={async (type) => {
           setShowBootstrap(false);
-          const result = await workspace.loadTemplate(type as any);
-          
-          if (result.needsInstall) {
-            setIsScaffolding(true);
-            setTimeout(async () => {
-              setBottomPanelOpen(true);
-              setBottomTab('terminal');
-              
-              if (result.type === 'react') {
-                 // Vite 6+ in create-vite@latest uses @rolldown/binding-wasm32-wasi which fails in WebContainers due to experimental WASI / missing native bindings.
-                 // We scaffold with Vite 5.4.x which is proven 100% stable in browser WebContainer environments.
-                 const p1 = await processManager.spawn(result.id, 'npx', ['-y', 'create-vite@5.4.1', '.', '--template', 'react-ts']);
-                 await p1.exit;
-                 const p2 = await processManager.spawn(result.id, 'npm', ['install', '--no-audit', '--no-fund', '--legacy-peer-deps']);
-                 await p2.exit;
-                 await processManager.spawn(result.id, 'npm', ['run', 'dev']);
-              } else if (result.type === 'express' || result.type === 'node') {
-                 const p1 = await processManager.spawn(result.id, 'npm', ['init', '-y']);
-                 await p1.exit;
-                 if (result.type === 'express') {
-                    const p2 = await processManager.spawn(result.id, 'npm', ['install', 'express', '--no-audit', '--no-fund']);
-                    await p2.exit;
-                 }
-              }
-              setIsScaffolding(false);
-            }, 1000);
-          }
+          await workspace.loadTemplate(type as any);
         }} 
         onImportFolder={() => {
           setShowBootstrap(false);
@@ -917,12 +770,14 @@ http.createServer((req, res) => {
 
   return (
     <div className="ide-root no-select">
-      {isScaffolding && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#1e1e2e]/80 backdrop-blur-sm">
-          <div className="flex flex-col items-center bg-[#181825] p-6 rounded-lg border border-[#313244] shadow-2xl">
-            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
-            <h3 className="text-[#cdd6f4] font-medium text-lg">Setting up project...</h3>
-            <p className="text-[#a6adc8] text-sm mt-2">Running npm installation. See terminal for details.</p>
+      {(isScaffolding || bootstrapStatus?.state === 'installing') && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#1e1e2e]/80 backdrop-blur-sm animate-fade-in">
+          <div className="flex flex-col items-center bg-[#181825] p-6 rounded-xl border border-[#313244] shadow-2xl max-w-sm text-center">
+            <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
+            <h3 className="text-[#cdd6f4] font-medium text-base">Setting Up Dependencies</h3>
+            <p className="text-[#a6adc8] text-xs mt-2">
+              {bootstrapStatus?.message || 'Installing packages inside WebContainer. Check the terminal for progress.'}
+            </p>
           </div>
         </div>
       )}
@@ -1310,6 +1165,7 @@ http.createServer((req, res) => {
                           activeFileName={activeFile?.name}
                           serverUrl={serverUrl}
                           serverReadyCount={serverReadyCount}
+                          bootstrapStatus={bootstrapStatus}
                           inspectEnabled={inspectEnabled}
                           onInspectChange={setInspectEnabled}
                           theme={settings.theme}

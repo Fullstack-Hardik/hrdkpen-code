@@ -3,8 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import {
   RefreshCw, ExternalLink, Download, Monitor,
-  Smartphone, Tablet, Laptop, Bug, Globe, Lock, ShieldCheck, ArrowRight, Sun, Moon
+  Smartphone, Tablet, Laptop, Bug, Globe, Lock, ShieldCheck, ArrowRight, Sun, Moon,
+  Loader2, AlertCircle
 } from 'lucide-react';
+
+import type { BootstrapStatus } from '@/lib/projectBootstrap';
 
 interface LivePreviewProps {
   htmlContent: string;
@@ -16,6 +19,7 @@ interface LivePreviewProps {
   onNavigate?: (url: string) => void;
   serverUrl?: string | null;
   serverReadyCount?: number;
+  bootstrapStatus?: BootstrapStatus;
   inspectEnabled?: boolean;
   onInspectChange?: (enabled: boolean) => void;
   theme?: string;
@@ -155,6 +159,7 @@ export const LivePreview = ({
   onNavigate,
   serverUrl,
   serverReadyCount,
+  bootstrapStatus,
   inspectEnabled,
   onInspectChange,
   theme,
@@ -414,7 +419,37 @@ export const LivePreview = ({
       </div>
 
       {/* Preview area */}
-      <div className="flex-1 overflow-auto flex items-start justify-center p-3 bg-[hsl(var(--crust))]">
+      <div className="flex-1 overflow-auto flex items-start justify-center p-3 bg-[hsl(var(--crust))] relative">
+        {/* Bootstrap State Indicator / Error Panel */}
+        {bootstrapStatus && (bootstrapStatus.state === 'installing' || bootstrapStatus.state === 'starting' || bootstrapStatus.state === 'waiting-for-server') && !currentUrl && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[hsl(var(--crust))]/90 backdrop-blur-sm p-6 text-center animate-fade-in">
+            <Loader2 className="w-8 h-8 animate-spin text-[hsl(var(--lavender))] mb-3" />
+            <p className="text-sm font-medium text-editor-text mb-1">
+              {bootstrapStatus.state === 'installing' && 'Installing dependencies...'}
+              {bootstrapStatus.state === 'starting' && 'Starting runtime server...'}
+              {bootstrapStatus.state === 'waiting-for-server' && 'Connecting to server port...'}
+            </p>
+            <p className="text-xs text-editor-text-muted max-w-sm">
+              {bootstrapStatus.message || 'Please wait while the project runtime boots up.'}
+            </p>
+          </div>
+        )}
+
+        {bootstrapStatus && bootstrapStatus.state === 'error' && !currentUrl && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[hsl(var(--crust))]/95 backdrop-blur-sm p-6 text-center animate-fade-in">
+            <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3">
+              <AlertCircle className="w-6 h-6 text-red-400" />
+            </div>
+            <p className="text-sm font-semibold text-editor-text mb-1">Runtime Bootstrap Error</p>
+            <p className="text-xs text-red-400 font-mono bg-red-950/20 px-3 py-2 rounded-lg border border-red-900/30 max-w-md break-all mb-4">
+              {bootstrapStatus.error || bootstrapStatus.message}
+            </p>
+            <p className="text-xs text-editor-text-muted">
+              Check the Terminal and Output tabs below for full build or npm logs.
+            </p>
+          </div>
+        )}
+
         {hasContent ? (
           <div
             className={`overflow-hidden rounded-xl border border-editor-border shadow-2xl relative transition-all ${

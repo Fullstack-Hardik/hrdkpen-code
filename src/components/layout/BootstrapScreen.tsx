@@ -71,6 +71,14 @@ const TEMPLATE_CARDS: TemplateCard[] = [
     stagger: 'stagger-4',
   },
   {
+    type: 'ejs',
+    label: 'Express + EJS',
+    description: 'Fullstack Express server with EJS template rendering.',
+    icon: <Code2 className="w-7 h-7 text-emerald-400" />,
+    gradient: 'from-emerald-500/15 via-transparent to-transparent',
+    stagger: 'stagger-5',
+  },
+  {
     type: 'python' as keyof typeof TEMPLATES,
     label: 'Python',
     description: 'Python scripting environment with Pyodide.',

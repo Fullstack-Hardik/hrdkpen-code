@@ -89,33 +89,138 @@ console.log('Arch:', os.arch());
 
   express: (): FileNode[] => [
     createNode('package.json', 'file', `{
-  "name": "express-project",
+  "name": "express-api-project",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Express.js REST API with route handling",
+  "main": "server.js",
   "scripts": {
-    "start": "node --watch index.js",
-    "dev": "node --watch index.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js"
   },
   "dependencies": {
-    "express": "^4.18.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
   }
 }`),
-    createNode('index.js', 'file', `const express = require('express');
+    createNode('server.js', 'file', `const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = 3000;
 
+app.use(cors());
+app.use(express.json());
+
+// API health and test endpoints
 app.get('/', (req, res) => {
-  res.send('Hello from Express on WebContainers!');
+  res.json({
+    status: 'online',
+    message: 'Welcome to HRDK Pen Express API Server!',
+    timestamp: new Date().toISOString(),
+    endpoints: ['/api/status', '/api/users']
+  });
+});
+
+app.get('/api/status', (req, res) => {
+  res.json({
+    uptime: process.uptime(),
+    nodeVersion: process.version,
+    memoryUsage: process.memoryUsage()
+  });
+});
+
+app.get('/api/users', (req, res) => {
+  res.json([
+    { id: 1, name: 'Alice Developer', role: 'Frontend Engineer' },
+    { id: 2, name: 'Bob Architect', role: 'Fullstack Lead' }
+  ]);
 });
 
 app.listen(port, () => {
-  console.log(\`Example app listening on port \${port}\`);
+  console.log(\`[Express] Server running and listening on port \${port}\`);
 });
 `),
+  ],
+
+  ejs: (): FileNode[] => [
+    createNode('package.json', 'file', `{
+  "name": "express-ejs-app",
+  "version": "1.0.0",
+  "description": "Express.js application rendering EJS server templates",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ejs": "^3.1.10"
+  }
+}`),
+    createNode('server.js', 'file', `const express = require('express');
+const path = require('path');
+const app = express();
+const port = 3000;
+
+// Configure EJS view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+  res.render('index', {
+    title: 'HRDK Pen EJS App',
+    heading: 'Server-Side Rendering with EJS & Express',
+    items: ['Fast Node.js VFS', 'Live Template Rendering', 'Zero Host Dependencies']
+  });
+});
+
+app.listen(port, () => {
+  console.log(\`[EJS App] Server listening at http://localhost:\${port}\`);
+});
+`),
+    createNode('views', 'folder', undefined, [
+      createNode('index.ejs', 'file', `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f111a;
+      color: #e2e8f0;
+      padding: 3rem 2rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    h1 { color: #60a5fa; margin-bottom: 0.5rem; }
+    p { color: #94a3b8; font-size: 1.1rem; }
+    .card {
+      background: #1e2230;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    li { margin-bottom: 0.5rem; color: #cbd5e1; }
+  </style>
+</head>
+<body>
+  <h1><%= heading %></h1>
+  <p>Rendered server-side inside WebContainer runtime.</p>
+
+  <div class="card">
+    <h3>Features Active:</h3>
+    <ul>
+      <% items.forEach(function(item) { %>
+        <li>✓ <%= item %></li>
+      <% }); %>
+    </ul>
+  </div>
+</body>
+</html>`),
+    ]),
   ],
 
   react: (): FileNode[] => [
