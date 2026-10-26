@@ -1052,10 +1052,10 @@ http.createServer((req, res) => {
                   <>
                 {/* Tab bar */}
                 <div
-                  className="flex items-center overflow-x-auto flex-shrink-0 no-select"
+                  className="flex items-center overflow-x-auto flex-shrink-0 no-select px-2 py-1 gap-1"
                   style={{
-                    height: 36,
-                    background: 'hsl(var(--mantle))',
+                    height: 40,
+                    background: 'hsl(var(--crust))',
                     borderBottom: '1px solid hsl(var(--surface1))',
                   }}
                 >
@@ -1314,38 +1314,43 @@ http.createServer((req, res) => {
               <div className="flex-1 flex flex-col h-full border-t border-editor-border">
             {/* Bottom panel tabs */}
             <div
-              className="flex items-center justify-between flex-shrink-0"
+              className="flex items-center justify-between flex-shrink-0 px-3 py-1 bg-[hsl(var(--crust))]/80 border-b border-[hsl(var(--surface1))]/70"
               style={{
-                height: 32,
-                background: 'hsl(var(--mantle))',
-                borderBottom: '1px solid hsl(var(--surface1))',
+                height: 38,
               }}
             >
-              <div className="flex items-center">
-                {(['terminal', 'output', 'problems', 'inspect', 'help'] as BottomPanel[]).map(tab => (
-                  <button
-                    key={tab}
-                    onClick={() => setBottomTab(tab)}
-                    className={`panel-tab ${bottomTab === tab ? 'active' : ''}`}
-                  >
-                    {tab === 'problems' && errorCount > 0 && (
-                      <span
-                        className="inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-bold mr-1"
-                        style={{ background: 'hsl(var(--red))', color: 'white' }}
-                      >
-                        {errorCount > 9 ? '9+' : errorCount}
-                      </span>
-                    )}
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
-                ))}
+              <div className="flex items-center p-0.5 rounded-lg bg-[hsl(var(--surface0))]/50 border border-[hsl(var(--surface1))]/60">
+                {(['terminal', 'output', 'problems', 'inspect', 'help'] as BottomPanel[]).map(tab => {
+                  const isActive = bottomTab === tab;
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => setBottomTab(tab)}
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-medium transition-all ${
+                        isActive
+                          ? 'bg-[hsl(var(--surface1))] text-white font-semibold shadow-sm'
+                          : 'text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface0))]'
+                      }`}
+                    >
+                      {tab === 'problems' && errorCount > 0 && (
+                        <span
+                          className="inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-bold"
+                          style={{ background: 'hsl(var(--red))', color: 'white' }}
+                        >
+                          {errorCount > 9 ? '9+' : errorCount}
+                        </span>
+                      )}
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  );
+                })}
               </div>
-              <div className="flex items-center gap-1.5 mr-2">
+              <div className="flex items-center gap-1.5">
                 {bottomTab === 'terminal' && (
                   <>
                     <button
                       onClick={() => terminalRefs.current[activeTerminalId]?.clear()}
-                      className="px-2 py-0.5 text-[10px] font-medium rounded text-editor-text-muted hover:text-editor-text hover:bg-editor-active-tab transition-colors border border-transparent hover:border-editor-border"
+                      className="px-2.5 py-1 text-[11px] font-medium rounded-lg text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface0))] transition-all border border-transparent hover:border-[hsl(var(--surface1))]"
                       title="Clear Terminal"
                     >
                       <Trash2 className="w-3 h-3 inline mr-1" />
@@ -1353,7 +1358,7 @@ http.createServer((req, res) => {
                     </button>
                     <button
                       onClick={() => terminalRefs.current[activeTerminalId]?.execute('help')}
-                      className="px-2 py-0.5 text-[10px] font-medium rounded text-editor-text-muted hover:text-editor-text hover:bg-editor-active-tab transition-colors border border-transparent hover:border-editor-border"
+                      className="px-2.5 py-1 text-[11px] font-medium rounded-lg text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface0))] transition-all border border-transparent hover:border-[hsl(var(--surface1))]"
                       title="Help Menu"
                     >
                       <HelpCircle className="w-3 h-3 inline mr-1" />
@@ -1361,10 +1366,10 @@ http.createServer((req, res) => {
                     </button>
                     <button
                       onClick={() => terminalRefs.current[activeTerminalId]?.execute('npm run dev')}
-                      className="px-2 py-0.5 text-[10px] font-medium rounded text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-colors border border-transparent hover:border-emerald-500/20"
+                      className="px-2.5 py-1 text-[11px] font-semibold rounded-lg text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 transition-all shadow-sm"
                       title="Start Dev Server"
                     >
-                      <Play className="w-3 h-3 inline mr-1" />
+                      <Play className="w-3 h-3 inline mr-1 fill-current" />
                       Run Dev
                     </button>
                   </>

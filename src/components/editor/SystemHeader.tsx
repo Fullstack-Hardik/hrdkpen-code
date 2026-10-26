@@ -97,182 +97,214 @@ export const SystemHeader = ({
 
   return (
     <header
-      className="flex items-center justify-between flex-shrink-0 no-select relative z-10"
+      className="flex items-center justify-between flex-shrink-0 no-select relative z-10 px-3 bg-[hsl(var(--crust))]/85 backdrop-blur-2xl border-b border-[hsl(var(--surface1))]/80"
       style={{
-        height: 44,
-        background: 'hsl(var(--crust))',
-        borderBottom: '1px solid hsl(var(--surface1))',
+        height: 46,
       }}
     >
-      {/* ── LEFT: Brand + macOS dots + Menus ── */}
-      <div className="flex items-center gap-0 h-full">
-        <div className="flex items-center gap-1.5 px-4 py-2 border-r h-full border-editor-border">
-          <div className="mac-btn mac-btn-close" />
-          <div className="mac-btn mac-btn-min" />
-          <div className="mac-btn mac-btn-max" />
+      {/* ── LEFT: macOS traffic lights + Brand + App Menu ── */}
+      <div className="flex items-center gap-2.5 h-full">
+        {/* Apple Traffic Lights */}
+        <div className="flex items-center gap-2 pl-1 pr-2.5 py-1">
+          <div className="mac-btn mac-btn-close cursor-pointer" title="Close" />
+          <div className="mac-btn mac-btn-min cursor-pointer" title="Minimize" />
+          <div className="mac-btn mac-btn-max cursor-pointer" title="Maximize" />
         </div>
 
-        <div className="flex items-center gap-2 px-3.5 h-full border-r border-editor-border">
-          <div className="flex items-center gap-2 rounded-lg px-2.5 py-1 bg-gradient-to-r from-blue-500/15 via-indigo-500/10 to-purple-500/15 border border-blue-500/30 shadow-sm">
-            <div className="w-5 h-5 rounded-md bg-blue-500 flex items-center justify-center text-white shadow-sm">
-              <Code2 className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[13px] font-black tracking-wider text-editor-text">
-              HRDK<span className="text-blue-400">PEN</span>
-            </span>
+        <div className="w-px h-4 bg-[hsl(var(--surface1))]" />
+
+        {/* Brand Badge */}
+        <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[hsl(var(--surface0))]/40 border border-[hsl(var(--surface1))]/60">
+          <div className="w-5 h-5 rounded-md bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-sm shadow-blue-500/20">
+            <Code2 className="w-3.5 h-3.5" />
           </div>
+          <span className="text-[12px] font-bold tracking-tight text-[hsl(var(--text))]">
+            HRDK<span className="text-blue-400">PEN</span>
+          </span>
         </div>
 
-        {/* Workspace Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-1.5 px-3 h-full text-xs hover:bg-editor-active-tab transition-fast text-editor-text-muted">
-              Workspace
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-52 bg-editor-panel border-editor-border text-editor-text animate-scale-in">
-            {onNewProject && (
-              <DropdownMenuItem onClick={onNewProject} className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-                <FolderOpen className="w-3.5 h-3.5" /> New Project
+        {/* Apple macOS style App Menus */}
+        <div className="flex items-center gap-0.5 ml-1">
+          {/* Workspace Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md hover:bg-[hsl(var(--surface0))]/70 transition-all text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))]">
+                Workspace
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-52 bg-[hsl(var(--crust))]/95 backdrop-blur-xl border border-[hsl(var(--surface1))] text-editor-text shadow-xl rounded-xl p-1 animate-scale-in">
+              {onNewProject && (
+                <DropdownMenuItem onClick={onNewProject} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                  <FolderOpen className="w-3.5 h-3.5 text-blue-400" /> New Project
+                </DropdownMenuItem>
+              )}
+              {onOpenProjects && (
+                <DropdownMenuItem onClick={onOpenProjects} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                  <Package className="w-3.5 h-3.5 text-purple-400" /> All Projects
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator className="bg-[hsl(var(--surface1))] my-1" />
+              <DropdownMenuItem onClick={onExport} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                <FileArchive className="w-3.5 h-3.5 text-amber-400" /> Export as ZIP
               </DropdownMenuItem>
-            )}
-            {onOpenProjects && (
-              <DropdownMenuItem onClick={onOpenProjects} className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-                <Package className="w-3.5 h-3.5" /> All Projects
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator className="bg-editor-border" />
-            <DropdownMenuItem onClick={onExport} className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-              <FileArchive className="w-3.5 h-3.5" /> Export as ZIP
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        {/* Edit Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-1.5 px-3 h-full text-xs hover:bg-editor-active-tab transition-fast text-editor-text-muted">
-              Edit
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-52 bg-editor-panel border-editor-border text-editor-text animate-scale-in">
-            <DropdownMenuItem onClick={onFormat} className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-              <AlignLeft className="w-3.5 h-3.5" /> Format Document
-              <kbd className="ml-auto text-[9px] opacity-40">Alt+Shift+F</kbd>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          {/* Edit Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md hover:bg-[hsl(var(--surface0))]/70 transition-all text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))]">
+                Edit
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-52 bg-[hsl(var(--crust))]/95 backdrop-blur-xl border border-[hsl(var(--surface1))] text-editor-text shadow-xl rounded-xl p-1 animate-scale-in">
+              <DropdownMenuItem onClick={onFormat} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                <AlignLeft className="w-3.5 h-3.5 text-indigo-400" /> Format Document
+                <kbd className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-[hsl(var(--surface1))] text-[hsl(var(--overlay1))]">Alt+Shift+F</kbd>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        {/* View Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-1.5 px-3 h-full text-xs hover:bg-editor-active-tab transition-fast text-editor-text-muted">
-              View
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-52 bg-editor-panel border-editor-border text-editor-text animate-scale-in">
-            {onToggleTerminal && (
-              <DropdownMenuItem onClick={onToggleTerminal} className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-                <TerminalSquare className="w-3.5 h-3.5" /> {terminalOpen ? 'Hide Terminal' : 'Show Terminal'}
-              </DropdownMenuItem>
-            )}
-            {onTogglePreview && (
-              <DropdownMenuItem onClick={onTogglePreview} className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-                <Monitor className="w-3.5 h-3.5" /> {rightPanelOpen ? 'Hide Preview' : 'Show Preview'}
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator className="bg-editor-border" />
-            {onToggleFullscreen && (
-              <DropdownMenuItem onClick={onToggleFullscreen} className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-                {isFullscreen ? <Minimize className="w-3.5 h-3.5" /> : <Maximize className="w-3.5 h-3.5" />}
-                {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-                <kbd className="ml-auto text-[9px] opacity-40">F11</kbd>
-              </DropdownMenuItem>
-            )}
-            {onToggleZenMode && (
-              <DropdownMenuItem onClick={onToggleZenMode} className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-                <EyeOff className="w-3.5 h-3.5" /> {isZenMode ? 'Exit Zen Mode' : 'Zen Mode'}
-                <kbd className="ml-auto text-[9px] opacity-40">Ctrl+K Z</kbd>
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          {/* View Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md hover:bg-[hsl(var(--surface0))]/70 transition-all text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))]">
+                View
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-52 bg-[hsl(var(--crust))]/95 backdrop-blur-xl border border-[hsl(var(--surface1))] text-editor-text shadow-xl rounded-xl p-1 animate-scale-in">
+              {onToggleTerminal && (
+                <DropdownMenuItem onClick={onToggleTerminal} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                  <TerminalSquare className="w-3.5 h-3.5 text-emerald-400" /> {terminalOpen ? 'Hide Terminal' : 'Show Terminal'}
+                  <kbd className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-[hsl(var(--surface1))] text-[hsl(var(--overlay1))]">Ctrl+`</kbd>
+                </DropdownMenuItem>
+              )}
+              {onTogglePreview && (
+                <DropdownMenuItem onClick={onTogglePreview} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                  <Monitor className="w-3.5 h-3.5 text-sky-400" /> {rightPanelOpen ? 'Hide Preview' : 'Show Preview'}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator className="bg-[hsl(var(--surface1))] my-1" />
+              {onToggleFullscreen && (
+                <DropdownMenuItem onClick={onToggleFullscreen} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                  {isFullscreen ? <Minimize className="w-3.5 h-3.5" /> : <Maximize className="w-3.5 h-3.5" />}
+                  {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+                  <kbd className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-[hsl(var(--surface1))] text-[hsl(var(--overlay1))]">F11</kbd>
+                </DropdownMenuItem>
+              )}
+              {onToggleZenMode && (
+                <DropdownMenuItem onClick={onToggleZenMode} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                  <EyeOff className="w-3.5 h-3.5 text-rose-400" /> {isZenMode ? 'Exit Zen Mode' : 'Zen Mode'}
+                  <kbd className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-[hsl(var(--surface1))] text-[hsl(var(--overlay1))]">Ctrl+K Z</kbd>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        {/* Run Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-1.5 px-3 h-full text-xs hover:bg-editor-active-tab transition-fast text-editor-text-muted">
-              Run
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-52 bg-editor-panel border-editor-border text-editor-text animate-scale-in">
-            {canRun && (
-              <DropdownMenuItem onClick={onRun} className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-                <Play className="w-3.5 h-3.5 text-green-400" /> Run Active File
-                <kbd className="ml-auto text-[9px] opacity-40">Ctrl+Enter</kbd>
+          {/* Run Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md hover:bg-[hsl(var(--surface0))]/70 transition-all text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))]">
+                Run
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-52 bg-[hsl(var(--crust))]/95 backdrop-blur-xl border border-[hsl(var(--surface1))] text-editor-text shadow-xl rounded-xl p-1 animate-scale-in">
+              {canRun && (
+                <DropdownMenuItem onClick={onRun} className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                  <Play className="w-3.5 h-3.5 text-emerald-400" /> Run Active File
+                  <kbd className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-[hsl(var(--surface1))] text-[hsl(var(--overlay1))]">Ctrl+Enter</kbd>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                <RefreshCw className="w-3.5 h-3.5 text-cyan-400" /> Restart Dev Server
               </DropdownMenuItem>
-            )}
-            <DropdownMenuItem className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-              <RefreshCw className="w-3.5 h-3.5" /> Restart Dev Server
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        {/* Help Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-1.5 px-3 h-full text-xs hover:bg-editor-active-tab transition-fast text-editor-text-muted">
-              Help
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-52 bg-editor-panel border-editor-border text-editor-text animate-scale-in">
-            <DropdownMenuItem className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-              <HelpCircle className="w-3.5 h-3.5" /> Documentation
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-              <Keyboard className="w-3.5 h-3.5" /> Keyboard Shortcuts
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-editor-border" />
-            <DropdownMenuItem className="text-xs gap-2 cursor-pointer hover:bg-editor-active-tab">
-              <Info className="w-3.5 h-3.5" /> About HRDK Pen
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          {/* Help Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md hover:bg-[hsl(var(--surface0))]/70 transition-all text-[hsl(var(--overlay1))] hover:text-[hsl(var(--text))]">
+                Help
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-52 bg-[hsl(var(--crust))]/95 backdrop-blur-xl border border-[hsl(var(--surface1))] text-editor-text shadow-xl rounded-xl p-1 animate-scale-in">
+              <DropdownMenuItem className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                <HelpCircle className="w-3.5 h-3.5 text-sky-400" /> Documentation
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                <Keyboard className="w-3.5 h-3.5 text-purple-400" /> Keyboard Shortcuts
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-[hsl(var(--surface1))] my-1" />
+              <DropdownMenuItem className="text-xs gap-2.5 cursor-pointer rounded-lg hover:bg-[hsl(var(--surface0))] py-1.5">
+                <Info className="w-3.5 h-3.5 text-emerald-400" /> About HRDK Pen
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
-      {/* ── CENTER: Project name ── */}
+      {/* ── CENTER: Apple Dynamic Island / Pill for Active Context ── */}
       <div className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
-        {projectName && (
-          <span className="text-xs font-medium truncate max-w-[200px] text-editor-text-muted" title={projectName}>
-            {projectName}
-          </span>
-        )}
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[hsl(var(--surface0))]/50 border border-[hsl(var(--surface1))]/70 shadow-sm backdrop-blur-md">
+          {projectName && (
+            <span className="text-[11px] font-semibold tracking-tight text-[hsl(var(--text))]" title={projectName}>
+              {projectName}
+            </span>
+          )}
+          {activeFile && (
+            <>
+              <span className="text-[hsl(var(--surface2))] text-[10px]">/</span>
+              <span className="text-[11px] font-medium text-[hsl(var(--overlay1))] flex items-center gap-1.5">
+                {activeFile.name}
+                {langLabel && (
+                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-mono bg-blue-500/15 text-blue-400 border border-blue-500/20">
+                    {langLabel}
+                  </span>
+                )}
+              </span>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* ── RIGHT: Productivity + Publish + Panels ── */}
-      <div className="flex items-center gap-3 px-3 h-full border-l border-editor-border">
-        
+      {/* ── RIGHT: Productivity Tools + Run Button + Publish Pill + Panel Toggles ── */}
+      <div className="flex items-center gap-2 h-full">
         <ProductivityTools />
 
-        <div className="w-px h-4 bg-editor-border" />
+        <div className="w-px h-4 bg-[hsl(var(--surface1))]" />
 
+        {/* Live Server Indicator */}
         {serverUrl && (
           <a
             href={serverUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] hover:bg-editor-active-tab transition-fast text-green-400"
+            className="hidden md:flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 hover:bg-emerald-500/20 transition-all shadow-sm"
             title={`Server running: ${serverUrl}`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             Live
           </a>
         )}
 
+        {/* Run active file button */}
+        {canRun && (
+          <button
+            onClick={onRun}
+            className="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11px] font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm shadow-emerald-600/30 active:scale-95 transition-all"
+            title="Run Code (Ctrl+Enter)"
+          >
+            <Play className="w-3 h-3 fill-current" />
+            <span className="hidden sm:inline">Run</span>
+          </button>
+        )}
+
+        {/* Publish Pill Button */}
         {canPublish && (
           <button
             onClick={onPublish}
-            className="flex items-center gap-1.5 h-7 px-3 rounded-md text-[12px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors"
+            className="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11px] font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm shadow-blue-600/30 active:scale-95 transition-all"
             title="Publish to the web"
           >
             <Rocket className="w-3 h-3" />
@@ -280,27 +312,36 @@ export const SystemHeader = ({
           </button>
         )}
 
-        {onToggleTerminal && (
-          <Button
-            variant="ghost" size="sm"
-            onClick={onToggleTerminal}
-            className={`h-7 w-7 p-0 rounded-md transition-fast ${terminalOpen ? 'bg-editor-active-tab text-editor-text' : 'text-editor-text-muted hover:text-editor-text hover:bg-editor-active-tab'}`}
-            title="Toggle Terminal (Ctrl+`)"
-          >
-            <TerminalSquare className="w-3.5 h-3.5" />
-          </Button>
-        )}
+        {/* Terminal and Panel Segmented Control */}
+        <div className="flex items-center p-0.5 rounded-lg bg-[hsl(var(--surface0))]/60 border border-[hsl(var(--surface1))]/80">
+          {onToggleTerminal && (
+            <button
+              onClick={onToggleTerminal}
+              className={`h-6 w-6 rounded-md flex items-center justify-center transition-all ${
+                terminalOpen 
+                  ? 'bg-blue-600/20 text-blue-400 shadow-sm border border-blue-500/30' 
+                  : 'text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface1))]'
+              }`}
+              title="Toggle Terminal (Ctrl+`)"
+            >
+              <TerminalSquare className="w-3.5 h-3.5" />
+            </button>
+          )}
 
-        {onToggleRightPanel && (
-          <Button
-            variant="ghost" size="sm"
-            onClick={onToggleRightPanel}
-            className={`h-7 w-7 p-0 rounded-md transition-fast ${rightPanelOpen ? 'bg-editor-active-tab text-editor-text' : 'text-editor-text-muted hover:text-editor-text hover:bg-editor-active-tab'}`}
-            title="Toggle Preview Panel"
-          >
-            {rightPanelOpen ? <PanelRightClose className="w-3.5 h-3.5" /> : <PanelRightOpen className="w-3.5 h-3.5" />}
-          </Button>
-        )}
+          {onToggleRightPanel && (
+            <button
+              onClick={onToggleRightPanel}
+              className={`h-6 w-6 rounded-md flex items-center justify-center transition-all ${
+                rightPanelOpen 
+                  ? 'bg-blue-600/20 text-blue-400 shadow-sm border border-blue-500/30' 
+                  : 'text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface1))]'
+              }`}
+              title="Toggle Preview Panel"
+            >
+              {rightPanelOpen ? <PanelRightClose className="w-3.5 h-3.5" /> : <PanelRightOpen className="w-3.5 h-3.5" />}
+            </button>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -47,12 +47,12 @@ export const ActivityBar = ({
   errorCount,
 }: ActivityBarProps) => {
   const topItems: BarItem[] = [
-    { id: 'explorer',     icon: <FolderGit2 className="w-5 h-5 text-sky-400 group-hover:text-sky-300" />,     label: 'File Explorer',     position: 'top' },
-    { id: 'search',       icon: <SearchCode className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" />, label: 'Global Search',     position: 'top' },
-    { id: 'projects',     icon: <FolderKanban className="w-5 h-5 text-purple-400 group-hover:text-purple-300" />, label: 'Project Workspaces', position: 'top' },
-    { id: 'docs',         icon: <BookMarked className="w-5 h-5 text-emerald-400 group-hover:text-emerald-300" />, label: 'Documentation',     position: 'top' },
-    { id: 'excalidraw',   icon: <Palette className="w-5 h-5 text-amber-400 group-hover:text-amber-300" />,       label: 'Whiteboard',        position: 'top' },
-    { id: 'mdn',          icon: <Compass className="w-5 h-5 text-teal-400 group-hover:text-teal-300" />,        label: 'Developer Docs',    position: 'top' },
+    { id: 'explorer',     icon: <FolderGit2 className="w-[18px] h-[18px] text-sky-400" />,     label: 'File Explorer',     position: 'top' },
+    { id: 'search',       icon: <SearchCode className="w-[18px] h-[18px] text-indigo-400" />, label: 'Global Search',     position: 'top' },
+    { id: 'projects',     icon: <FolderKanban className="w-[18px] h-[18px] text-purple-400" />, label: 'Project Workspaces', position: 'top' },
+    { id: 'docs',         icon: <BookMarked className="w-[18px] h-[18px] text-emerald-400" />, label: 'Documentation',     position: 'top' },
+    { id: 'excalidraw',   icon: <Palette className="w-[18px] h-[18px] text-amber-400" />,       label: 'Whiteboard',        position: 'top' },
+    { id: 'mdn',          icon: <Compass className="w-[18px] h-[18px] text-teal-400" />,        label: 'Developer Docs',    position: 'top' },
   ];
 
   const renderItem = (item: BarItem) => {
@@ -66,28 +66,24 @@ export const ActivityBar = ({
         aria-label={item.label}
         aria-pressed={isActive}
       >
-        {/* Active indicator bar */}
+        {/* Active indicator pill */}
         {isActive && (
           <span className="activity-bar-indicator animate-fade-in" />
         )}
 
         {/* Icon with subtle scale on active */}
         <span
-          className="relative z-10 transition-transform duration-150"
-          style={{ transform: isActive ? 'scale(1.1)' : 'scale(1)' }}
+          className="relative z-10 transition-transform duration-200"
+          style={{ transform: isActive ? 'scale(1.05)' : 'scale(1)' }}
         >
           {item.icon}
         </span>
 
-        {/* Tooltip */}
+        {/* Apple style Tooltip */}
         <span
-          className="absolute left-full ml-3 px-2.5 py-1 text-xs rounded-md whitespace-nowrap pointer-events-none z-50
-                     opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-editor-md"
-          style={{
-            background: 'hsl(var(--crust))',
-            color: 'hsl(var(--text))',
-            border: '1px solid hsl(var(--surface1))',
-          }}
+          className="absolute left-full ml-3 px-2.5 py-1 text-[11px] font-medium rounded-lg whitespace-nowrap pointer-events-none z-50
+                     opacity-0 group-hover:opacity-100 transition-all duration-150 shadow-editor-md border border-[hsl(var(--surface1))]
+                     bg-[hsl(var(--crust))]/95 backdrop-blur-md text-[hsl(var(--text))]"
         >
           {item.label}
         </span>
@@ -97,50 +93,46 @@ export const ActivityBar = ({
 
   return (
     <div
-      className="flex flex-col items-center justify-between flex-shrink-0 border-r border-editor-border bg-activity-bar"
-      style={{ width: 48 }}
+      className="flex flex-col items-center justify-between flex-shrink-0 border-r border-[hsl(var(--surface1))] bg-[hsl(var(--mantle))]/90 backdrop-blur-xl py-2"
+      style={{ width: 50 }}
       role="navigation"
       aria-label="Activity Bar"
     >
       {/* Top icons */}
-      <div className="flex flex-col items-center pt-2 gap-0.5">
+      <div className="flex flex-col items-center gap-1">
         {topItems.map(renderItem)}
       </div>
 
       {/* Bottom icons */}
-      <div className="flex flex-col items-center pb-2 gap-0.5">
+      <div className="flex flex-col items-center gap-1">
         {/* Terminal toggle */}
         <button
           title="Terminal (Ctrl+`)"
           onClick={onToggleTerminal}
-          className={`activity-bar-icon group relative ${terminalOpen ? 'active text-[hsl(var(--text))]' : ''}`}
+          className={`activity-bar-icon group relative ${terminalOpen ? 'active' : ''}`}
           aria-label="Toggle Terminal"
           aria-pressed={terminalOpen}
         >
           {terminalOpen && <span className="activity-bar-indicator" />}
-          <Terminal className="w-5 h-5 relative z-10 text-emerald-400" />
+          <Terminal className="w-[18px] h-[18px] relative z-10 text-emerald-400" />
           {errorCount > 0 && (
             <span
-              className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white z-20"
+              className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white z-20 shadow-sm"
               style={{ background: 'hsl(var(--red))' }}
             >
               {errorCount > 9 ? '9+' : errorCount}
             </span>
           )}
           <span
-            className="absolute left-full ml-3 px-2.5 py-1 text-xs rounded-md whitespace-nowrap pointer-events-none z-50
-                       opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-editor-md"
-            style={{
-              background: 'hsl(var(--crust))',
-              color: 'hsl(var(--text))',
-              border: '1px solid hsl(var(--surface1))',
-            }}
+            className="absolute left-full ml-3 px-2.5 py-1 text-[11px] font-medium rounded-lg whitespace-nowrap pointer-events-none z-50
+                       opacity-0 group-hover:opacity-100 transition-all duration-150 shadow-editor-md border border-[hsl(var(--surface1))]
+                       bg-[hsl(var(--crust))]/95 backdrop-blur-md text-[hsl(var(--text))]"
           >
             Terminal (Ctrl+`)
           </span>
         </button>
 
-        {/* Settings button - opens separate modal card */}
+        {/* Settings button */}
         <button
           title="Settings"
           onClick={() => {
@@ -153,15 +145,11 @@ export const ActivityBar = ({
           className="activity-bar-icon group relative hover:text-[hsl(var(--text))]"
           aria-label="Settings"
         >
-          <Settings2 className="w-5 h-5 relative z-10 group-hover:rotate-45 transition-transform duration-300" />
+          <Settings2 className="w-[18px] h-[18px] relative z-10 text-[hsl(var(--overlay1))] group-hover:text-white group-hover:rotate-45 transition-all duration-300" />
           <span
-            className="absolute left-full ml-3 px-2.5 py-1 text-xs rounded-md whitespace-nowrap pointer-events-none z-50
-                       opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-editor-md"
-            style={{
-              background: 'hsl(var(--crust))',
-              color: 'hsl(var(--text))',
-              border: '1px solid hsl(var(--surface1))',
-            }}
+            className="absolute left-full ml-3 px-2.5 py-1 text-[11px] font-medium rounded-lg whitespace-nowrap pointer-events-none z-50
+                       opacity-0 group-hover:opacity-100 transition-all duration-150 shadow-editor-md border border-[hsl(var(--surface1))]
+                       bg-[hsl(var(--crust))]/95 backdrop-blur-md text-[hsl(var(--text))]"
           >
             Settings
           </span>

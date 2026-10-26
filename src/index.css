@@ -1,12 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,300..700;1,300..700&family=Fira+Code:wght@300..700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cascadia+Code:ital,wght@0,300..700;1,300..700&family=Fira+Code:wght@300..700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════
-   HRDK Pen — Premium IDE Design System
-   Inspired by VS Code + Apple Human Interface Guidelines
+   HRDK Pen — Apple macOS Sequoia & Google Workspace Fluid Design System
+   Refined glassmorphism, subtle specular reflections, SF style controls
    ═══════════════════════════════════════════════════════════════ */
 
 @layer base {
@@ -526,25 +526,26 @@
   body {
     background-color: hsl(var(--editor-bg));
     color: hsl(var(--editor-text));
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.011em;
   }
 
   /* === Custom Scrollbars === */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--surface1));
-    border-radius: 10px;
+    background: hsl(var(--surface1) / 0.8);
+    border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover { background: hsl(var(--surface2)); }
   ::-webkit-scrollbar-corner { background: transparent; }
 
   /* === Selection === */
   ::selection {
-    background: hsl(var(--blue) / 0.28);
-    color: hsl(var(--text));
+    background: hsl(var(--blue) / 0.35);
+    color: #ffffff;
   }
 }
 
@@ -557,23 +558,29 @@
   .bg-editor-accent       { background-color: hsl(var(--editor-accent)); }
   .bg-activity-bar        { background-color: hsl(var(--activity-bar-bg)); }
 
-  /* ─── Glassmorphism ─── */
+  /* ─── Apple / Google Glassmorphism & Translucency ─── */
   .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
+    background: hsla(var(--crust), 0.72);
+    backdrop-filter: blur(24px) saturate(190%);
+    -webkit-backdrop-filter: blur(24px) saturate(190%);
+    border: 1px solid hsla(var(--surface1), 0.6);
   }
   .glass-light {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
   .glass-panel {
-    background: hsl(var(--editor-panel) / 0.88);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: hsla(var(--editor-panel), 0.82);
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+    border: 1px solid hsla(var(--surface1), 0.5);
+  }
+  .apple-vibrant {
+    background: hsla(var(--crust), 0.65);
+    backdrop-filter: blur(20px) saturate(190%);
+    -webkit-backdrop-filter: blur(20px) saturate(190%);
   }
 
   /* ─── Text utilities ─── */
@@ -590,14 +597,14 @@
   .border-editor-accent   { border-color: hsl(var(--editor-accent)); }
 
   /* ─── Shadow utilities ─── */
-  .shadow-editor-sm       { box-shadow: var(--shadow-sm); }
-  .shadow-editor-md       { box-shadow: var(--shadow-md); }
-  .shadow-editor-lg       { box-shadow: var(--shadow-lg); }
+  .shadow-editor-sm       { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.25); }
+  .shadow-editor-md       { box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.35); }
+  .shadow-editor-lg       { box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.45); }
 
   /* ─── Animation utilities ─── */
-  .transition-editor  { transition: var(--tx-smooth); }
-  .transition-fast    { transition: var(--tx-fast); }
-  .transition-spring  { transition: var(--tx-spring); }
+  .transition-editor  { transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+  .transition-fast    { transition: all 0.14s cubic-bezier(0.16, 1, 0.3, 1); }
+  .transition-spring  { transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
   /* ─── IDE Layout ─── */
   .ide-root {
@@ -610,77 +617,80 @@
 
   /* ─── macOS Traffic Lights ─── */
   .mac-traffic-light {
-    @apply flex items-center gap-1.5;
+    @apply flex items-center gap-2;
   }
   .mac-btn {
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    transition: filter 0.15s ease;
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     flex-shrink: 0;
+    box-shadow: inset 0 0.5px 0.5px rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0,0,0,0.3);
   }
-  .mac-btn:hover { filter: brightness(1.2); }
-  .mac-btn-close   { background: #ff5f57; }
-  .mac-btn-min     { background: #febc2e; }
-  .mac-btn-max     { background: #28c840; }
+  .mac-btn:hover { filter: brightness(1.15); transform: scale(1.08); }
+  .mac-btn-close   { background: #ff5f57; border: 0.5px solid rgba(0,0,0,0.15); }
+  .mac-btn-min     { background: #febc2e; border: 0.5px solid rgba(0,0,0,0.15); }
+  .mac-btn-max     { background: #28c840; border: 0.5px solid rgba(0,0,0,0.15); }
 
   /* ─── Activity Bar ─── */
   .activity-bar-icon {
-    @apply flex items-center justify-center w-12 h-12 relative cursor-pointer;
+    @apply flex items-center justify-center w-10 h-10 rounded-xl relative cursor-pointer my-1;
     color: hsl(var(--overlay1));
-    transition: var(--tx-fast);
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .activity-bar-icon:hover {
     color: hsl(var(--text));
-    background: hsl(var(--surface0) / 0.5);
+    background: hsla(var(--surface0), 0.7);
+    transform: translateY(-1px);
   }
   .activity-bar-icon.active {
-    color: hsl(var(--text));
+    color: #ffffff;
+    background: hsla(var(--blue), 0.18);
+    box-shadow: inset 0 0 0 1px hsla(var(--blue), 0.35);
   }
   .activity-bar-indicator {
     position: absolute;
-    left: 0;
+    left: -4px;
     top: 50%;
     transform: translateY(-50%);
-    width: 2px;
-    height: 20px;
+    width: 3px;
+    height: 18px;
     background: hsl(var(--blue));
-    border-radius: 0 2px 2px 0;
-    box-shadow: var(--shadow-glow-blue);
+    border-radius: 9999px;
+    box-shadow: 0 0 10px hsla(var(--blue), 0.6);
   }
 
-  /* ─── Tab styles ─── */
+  /* ─── Apple Safari / Sequoia Pill Tabs ─── */
   .editor-tab {
-    @apply flex items-center gap-2 px-3.5 py-2 text-xs border-r cursor-pointer select-none flex-shrink-0;
-    min-width: 90px;
-    max-width: 200px;
-    border-right-color: hsl(var(--surface1));
+    @apply flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg cursor-pointer select-none flex-shrink-0 mx-1;
+    min-width: 100px;
+    max-width: 220px;
     color: hsl(var(--overlay1));
-    background-color: hsl(var(--editor-inactive-tab));
-    transition: var(--tx-fast);
+    background-color: transparent;
+    border: 1px solid transparent;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .editor-tab:hover {
     color: hsl(var(--text));
-    background-color: hsl(var(--surface0) / 0.6);
+    background-color: hsla(var(--surface0), 0.5);
   }
   .editor-tab.active {
     color: hsl(var(--text));
-    background-color: hsl(var(--editor-bg));
-    border-top: 2px solid hsl(var(--blue));
-    box-shadow: inset 0 1px 0 0 hsl(var(--blue) / 0.4);
-    position: relative;
+    background-color: hsla(var(--surface0), 0.85);
+    border-color: hsla(var(--surface2), 0.5);
+    box-shadow: 0 2px 8px -2px rgba(0,0,0,0.4), inset 0 0.5px 0.5px rgba(255,255,255,0.1);
     font-weight: 500;
   }
 
   .tab-close {
-    @apply opacity-0 rounded flex items-center justify-center ml-auto flex-shrink-0;
-    width: 14px;
-    height: 14px;
-    transition: var(--tx-fast);
+    @apply opacity-0 rounded-md flex items-center justify-center ml-auto flex-shrink-0 text-editor-text-dim;
+    width: 16px;
+    height: 16px;
+    transition: all 0.14s ease;
   }
   .editor-tab:hover .tab-close,
-  .editor-tab.active .tab-close { @apply opacity-60; }
-  .tab-close:hover { @apply !opacity-100; background: hsl(var(--surface1)); }
+  .editor-tab.active .tab-close { @apply opacity-70; }
+  .tab-close:hover { @apply !opacity-100 text-white; background: hsla(var(--surface2), 0.8); }
 
   /* ─── Panel tabs ─── */
   .panel-tab {

@@ -380,58 +380,56 @@ export const FileExplorer = ({
 
           {/* Explorer Header */}
           <div
-            className="flex items-center justify-between px-3 py-2 border-b border-editor-border flex-shrink-0"
-            style={{ minHeight: 36 }}
+            className="flex items-center justify-between px-3 py-2 border-b border-[hsl(var(--surface1))]/70 flex-shrink-0 bg-[hsl(var(--crust))]/40"
+            style={{ minHeight: 38 }}
           >
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[hsl(var(--overlay1))]">
+                Workspace
+              </span>
               {projectName && (
                 <span
-                  className="text-[11px] font-semibold uppercase tracking-widest truncate"
-                  style={{ color: 'hsl(var(--overlay2))' }}
+                  className="text-[11px] font-semibold text-[hsl(var(--text))] truncate max-w-[120px]"
                   title={projectName}
                 >
-                  {projectName}
+                  · {projectName}
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-0.5 flex-shrink-0">
-              <Button
-                variant="ghost" size="icon"
-                className="w-6 h-6 text-editor-text-muted hover:text-white hover:bg-editor-active-tab"
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button
+                className="w-6 h-6 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface0))] transition-all"
                 onClick={() => startCreating('file', null)}
                 title="New File"
               >
                 <FilePlus className="w-3.5 h-3.5" />
-              </Button>
-              <Button
-                variant="ghost" size="icon"
-                className="w-6 h-6 text-editor-text-muted hover:text-white hover:bg-editor-active-tab"
+              </button>
+              <button
+                className="w-6 h-6 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface0))] transition-all"
                 onClick={() => startCreating('folder', null)}
                 title="New Folder"
               >
                 <FolderPlus className="w-3.5 h-3.5" />
-              </Button>
+              </button>
               {onSync && (
-                <Button
-                  variant="ghost" size="icon"
-                  className="w-6 h-6 text-editor-text-muted hover:text-white hover:bg-editor-active-tab"
+                <button
+                  className="w-6 h-6 flex items-center justify-center rounded-md text-[hsl(var(--overlay1))] hover:text-white hover:bg-[hsl(var(--surface0))] transition-all"
                   onClick={onSync}
                   title="Sync from WebContainer"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
-                </Button>
+                </button>
               )}
               {/* Templates dropdown — single clean menu, no duplicates */}
               {onLoadTemplate && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost" size="icon"
-                      className="w-6 h-6 text-yellow-500 hover:text-yellow-400 hover:bg-editor-active-tab"
+                    <button
+                      className="w-6 h-6 flex items-center justify-center rounded-md text-amber-400 hover:text-amber-300 hover:bg-[hsl(var(--surface0))] transition-all"
                       title="New from Template"
                     >
                       <Plus className="w-3.5 h-3.5" />
-                    </Button>
+                    </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
