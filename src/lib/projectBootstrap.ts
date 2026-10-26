@@ -289,6 +289,7 @@ server.listen(3000, () => {
         try {
           const installProc = await processManager.spawn(projectId, 'npm', [
             'install',
+            '--prefer-offline',
             '--no-audit',
             '--no-fund',
             '--legacy-peer-deps',

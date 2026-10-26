@@ -201,7 +201,7 @@ export const SmartCodeEditor = () => {
       // Execute centralized project bootstrap pipeline
       projectBootstrapService.bootstrapProject(
         workspace.activeProjectId,
-        workspace.files,
+        workspaceFilesRef.current,
         {
           inspectEnabled,
           onLog: (type, text) => {
@@ -212,7 +212,7 @@ export const SmartCodeEditor = () => {
         console.error('Failed to bootstrap project:', err);
       });
     }
-  }, [workspace.activeProjectId, workspace.isReady, workspace.files, inspectEnabled, addOutput]);
+  }, [workspace.activeProjectId, workspace.isReady, inspectEnabled, addOutput]);
 
   // Use a ref to hold latest workspace files for the sync service to preserve UUIDs
   const workspaceFilesRef = useRef(workspace.files);
