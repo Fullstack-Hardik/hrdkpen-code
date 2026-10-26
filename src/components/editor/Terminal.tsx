@@ -202,7 +202,21 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(({ onClose, ma
           term.writeln('');
           return;
         }
-        writer.write(cmd + '\r');
+
+        // WebContainer fix: Vite 6+ (scaffolded by unpinned create-vite) downloads @rolldown/binding-wasm32-wasi
+        // which throws "Cannot find native binding" due to missing WASI bindings in browser WebContainers.
+        // Intercepting and mapping to create-vite@5.4.1 avoids this completely.
+        let finalCmd = cmd;
+        if (finalCmd.includes('npm create vite') || finalCmd.includes('npm init vite') || finalCmd.includes('npx create-vite')) {
+          if (!finalCmd.includes('@5.')) {
+            finalCmd = finalCmd
+              .replace(/npm create vite(@latest)?/g, 'npx -y create-vite@5.4.1')
+              .replace(/npm init vite(@latest)?/g, 'npx -y create-vite@5.4.1')
+              .replace(/npx create-vite(@latest)?/g, 'npx -y create-vite@5.4.1');
+            term.writeln('\x1b[33m[HRDK Pen] Using create-vite@5.4.1 for WebContainer compatibility...\x1b[0m');
+          }
+        }
+        writer.write(finalCmd + '\r');
       }
     },
     clear: () => {
