@@ -873,7 +873,9 @@ http.createServer((req, res) => {
               setBottomTab('terminal');
               
               if (result.type === 'react') {
-                 const p1 = await processManager.spawn(result.id, 'npx', ['-y', 'create-vite@latest', '.', '--template', 'react-ts']);
+                 // Vite 6+ in create-vite@latest uses @rolldown/binding-wasm32-wasi which fails in WebContainers due to experimental WASI / missing native bindings.
+                 // We scaffold with Vite 5.4.x which is proven 100% stable in browser WebContainer environments.
+                 const p1 = await processManager.spawn(result.id, 'npx', ['-y', 'create-vite@5.4.1', '.', '--template', 'react-ts']);
                  await p1.exit;
                  const p2 = await processManager.spawn(result.id, 'npm', ['install', '--no-audit', '--no-fund', '--legacy-peer-deps']);
                  await p2.exit;

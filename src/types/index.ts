@@ -101,10 +101,14 @@ export interface Extension {
   id: string;
   name: string;
   description: string;
-  category: 'formatter' | 'linter' | 'preview' | 'utility' | 'snippets' | 'autocomplete' | 'ai' | 'git';
+  category: 'formatter' | 'linter' | 'preview' | 'utility' | 'snippets' | 'autocomplete' | 'ai' | 'git' | 'testing' | 'theme';
   enabled: boolean;
   builtIn: boolean;
   icon?: string;
   author?: string;
   version?: string;
+  repoUrl?: string;
+  license?: string;
+  permissions?: string[];
+  compatibility?: string;
 }

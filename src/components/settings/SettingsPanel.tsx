@@ -391,42 +391,93 @@ export const SettingsPanel = ({ settings, onUpdate, onReset, onClose, initialCat
           )}
 
           {activeCategory === 'extensions' && (
-            <div className="space-y-8 animate-fade-in">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between ml-1">
-                  <Label className="text-xs font-semibold text-editor-text-muted uppercase tracking-wider">Top Extensions & Tooling</Label>
-                  <span className="text-[11px] text-editor-text-muted">{extensions.filter(e => e.enabled).length} of {extensions.length} active</span>
+            <div className="space-y-6 animate-fade-in">
+              {/* Header with Search and Master Controls */}
+              <div className="flex items-center justify-between ml-1 flex-wrap gap-2">
+                <div>
+                  <Label className="text-xs font-semibold text-editor-text-muted uppercase tracking-wider">
+                    Open-Source Extensions Center
+                  </Label>
+                  <p className="text-[11px] text-[hsl(var(--overlay1))] mt-0.5">
+                    Official registries, linters, agent tools, and language runtime extensions
+                  </p>
                 </div>
-                <div className="bg-[hsl(var(--crust))] border border-editor-border rounded-xl overflow-hidden shadow-sm divide-y divide-editor-border/60">
-                  {extensions.map(ext => (
-                    <div key={ext.id} className="flex items-start justify-between p-4 hover:bg-[hsl(var(--surface0)/0.3)] transition-colors">
-                      <div className="flex flex-col pr-4">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <Label className="text-[13px] font-semibold text-editor-text">{ext.name}</Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    {extensions.filter(e => e.enabled).length} of {extensions.length} active
+                  </span>
+                </div>
+              </div>
+
+              {/* Extension Cards Grid */}
+              <div className="bg-[hsl(var(--crust))] border border-editor-border rounded-xl overflow-hidden shadow-sm divide-y divide-editor-border/60">
+                {extensions.map(ext => (
+                  <div key={ext.id} className="p-4 hover:bg-[hsl(var(--surface0)/0.3)] transition-colors">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex flex-col flex-1 min-w-0">
+                        {/* Title & Badges */}
+                        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                          <Label className="text-[13px] font-bold text-editor-text">{ext.name}</Label>
                           {ext.version && (
                             <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20">
                               v{ext.version}
                             </span>
                           )}
-                          <span className="px-1.5 py-0.2 rounded text-[9px] font-medium bg-editor-active-tab text-editor-text-muted uppercase tracking-wider border border-editor-border/50">
+                          <span className="px-1.5 py-0.2 rounded text-[9px] font-medium bg-editor-active-tab text-[hsl(var(--overlay1))] uppercase tracking-wider border border-editor-border/50">
                             {ext.category}
                           </span>
+                          {ext.license && (
+                            <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              {ext.license}
+                            </span>
+                          )}
                           {ext.author && (
                             <span className="text-[10px] text-editor-text-dim">
                               by {ext.author}
                             </span>
                           )}
                         </div>
-                        <span className="text-[11px] text-editor-text-muted leading-relaxed">{ext.description}</span>
+
+                        {/* Description */}
+                        <p className="text-[11px] text-editor-text-muted leading-relaxed mb-2">
+                          {ext.description}
+                        </p>
+
+                        {/* Metadata Footer */}
+                        <div className="flex items-center gap-3 text-[10px] text-[hsl(var(--overlay1))] flex-wrap">
+                          {ext.repoUrl && (
+                            <a
+                              href={ext.repoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1 font-mono"
+                            >
+                              GitHub ↗
+                            </a>
+                          )}
+                          {ext.compatibility && (
+                            <span className="flex items-center gap-1 text-[hsl(var(--overlay2))]">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                              {ext.compatibility}
+                            </span>
+                          )}
+                          {ext.permissions && ext.permissions.length > 0 && (
+                            <span className="text-editor-text-dim font-mono">
+                              Perms: {ext.permissions.join(', ')}
+                            </span>
+                          )}
+                        </div>
                       </div>
+
+                      {/* Enable/Disable Switch */}
                       <Switch 
                         checked={ext.enabled} 
                         onCheckedChange={v => toggle(ext.id, v)} 
                         className="scale-90 mt-1 flex-shrink-0" 
                       />
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
