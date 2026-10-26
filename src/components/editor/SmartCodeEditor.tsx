@@ -94,6 +94,9 @@ export const SmartCodeEditor = () => {
 
   // Output panel
   const [outputLines, setOutputLines] = useState<OutputLine[]>([]);
+  const addOutput = useCallback((type: OutputLine['type'], text: string) => {
+    setOutputLines(prev => [...prev, makeOutputLine(type, text)]);
+  }, []);
 
   // Selection
   const [selection, setSelection] = useState<{ text: string; pos: { top: number; left: number; height: number } | null }>({ text: '', pos: null });
@@ -400,10 +403,6 @@ export const SmartCodeEditor = () => {
   };
 
   // ─── Code execution ───
-  const addOutput = useCallback((type: OutputLine['type'], text: string) => {
-    setOutputLines(prev => [...prev, makeOutputLine(type, text)]);
-  }, []);
-
   const runActiveFile = useCallback(async () => {
     if (!activeFile?.content) return;
     const lang = activeFile.language ?? '';
